@@ -1,0 +1,532 @@
+{% extends 'widgets/widget_template.html' %}
+{% load custom_template %}
+
+{% block title_color %}{{ title_color|default:'white' }}{% endblock %}
+{% block title_text_color %}{{ title_text_color|default:'rgb(101, 71, 150)' }}{% endblock %}
+{% block body_color %}{{ body_color|default:'white' }}{% endblock %}
+{% block body_text_color %}{{ body_text_color|default:'black' }}{% endblock %}
+{% block custom_title_prop %}{% if title_logo %}style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"{% endif %}{% endblock %}
+{% block title1 %}{{ title1 }}{% endblock %}
+{% block title2 %}{{ title2 }}{% endblock %}
+{% block custom_tools %}
+{% endblock %}
+
+{% block widget_content %} <!-- Main Start Block -->
+
+<!--
+File: cloudpassagehalo/cloudpassagehalo_servers_information.html
+
+Copyright (c) Phantom Cyber Corporation, 2017
+
+This unpublished material is proprietary to Phantom Cyber.
+All rights reserved. The methods and
+techniques described herein are considered trade secrets
+and/or confidential. Reproduction or distribution, in whole
+or in part, is forbidden except by express written permission
+of Phantom Cyber Corporation.
+-->
+
+<style>
+
+    .cloudpassagehalo-report a:link {
+    color: black;
+    }
+
+    .cloudpassagehalo-report a:hover {
+    text-decoration:underline;
+    }
+
+    .cloudpassagehalo-report a:visited {
+    color: black;
+    }
+
+    .cloudpassagehalo-report .wf-table-vertical {
+    width: initial;
+    font-size: 12px;
+    }
+
+    .cloudpassagehalo-report .wf-table-vertical td{
+    padding: 5px;
+    border: 1px solid rgb(234, 234, 234);
+    }
+
+    .cloudpassagehalo-report .wf-table-vertical tr td:first-child {
+    font-weight: bold;
+    }
+
+    .cloudpassagehalo-report .wf-table-horizontal {
+    border: 1px solid rgb(234, 234, 234);
+    font-size: 12px;
+    padding-right: 10px;
+    }
+
+    .cloudpassagehalo-report .wf-table-horizontal th {
+    text-align: center;
+    border: 1px solid rgb(234, 234, 234);
+    text-transform: uppercase;
+    font-weight: normal;
+    color: rgb(108, 129, 139);
+    padding: 5px;
+    }
+
+    .cloudpassagehalo-report .wf-table-horizontal td {
+    border: 1px solid rgb(234, 234, 234);
+    padding: 5px;
+    padding-left: 4px;
+    }
+
+    .cloudpassagehalo-report .wf-h3-style {
+    font-size : 20px
+    }
+
+    .cloudpassagehalo-report .wf-h4-style {
+    font-size : 16px
+    }
+
+    .cloudpassagehalo-report .table-header {
+    font-size: 20px;
+    margin-bottom: 3px;
+    }
+
+    .cloudpassagehalo-report .dt-center{
+    text-align: center;
+    }
+
+    .cloudpassagehalo-report .dataTables_filter {
+    text-align: right !important;
+    float: right;
+    }
+
+    .cloudpassagehalo-report .dataTables_filter input{
+    border: 1px solid rgb(234, 234, 234);
+    width: 150px;
+    }
+
+    .cloudpassagehalo-report .glyphicon.glyphicon-dot:before {
+    content: "\25cf"; font-size: 10px;
+    }
+
+</style>
+
+<div class="cloudpassagehalo-report"
+     style="overflow: auto; width: 100%; height: 100%; padding-left:10px; padding-right:10px">
+    <!-- Main Div -->
+
+    {% for result in results %} <!-- loop for each result -->
+    {% if not result.data %}
+    <h4 class="wf-h4-style">No reports found</h4>
+    {% else %}
+    <h3 class="wf-h3-style">Info</h3>
+    <table class="wf-table-vertical">
+        <tr>
+            {% if result.param.package_name %}
+            <td>Package Name:</td>
+            <td><a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['cloudpassagehalo package name'], 'value': '{{result.param.package_name}}' }], 0, {{ container.id }}, null, false);">
+                {{result.param.package_name}}
+                &nbsp;
+                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+            </a></td>
+            {% endif %}
+            {% if result.param.username %}
+            <td>Username:</td>
+            <td><a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['user name'], 'value': '{{result.param.username}}' }], 0, {{ container.id }}, null, false);">
+                {{result.param.username}}
+                &nbsp;
+                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+            </a></td>
+            {% endif %}
+            {% if result.param.cve_number %}
+            <td>Common Vulnerability and Exposure number:</td>
+            <td><a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['cloudpassagehalo cve number'], 'value': '{{result.param.cve_number}}' }], 0, {{ container.id }}, null, false);">
+                {{result.param.cve_number}}
+                &nbsp;
+                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+            </a></td>
+            {% endif %}
+            {% if result.param.process_name %}
+            <td>Process name:</td>
+            <td><a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['process name'], 'value': '{{result.param.process_name}}' }], 0, {{ container.id }}, null, false);">
+                {{result.param.process_name}}
+                &nbsp;
+                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+            </a></td>
+            {% endif %}
+        </tr>
+    </table>
+    <h3 class="wf-h3-style">Server Information</h3>
+    <!--Server Information-->
+    <table class="wf-table-horizontal datatable">
+        <thead>
+        <tr>
+            <th>OS Type</th>
+            <th>Server</th>
+            {% if result.param.username %}
+            <th>Last Login</th>
+            <th>Comment</th>
+            <th>Shell</th>
+            <th>GID</th>
+            <th>UID</th>
+            <th>Admin Privilege</th>
+            <th>Locked</th>
+            <th>SID</th>
+            {% endif %}
+            <th>Server Label</th>
+            <th>Agent Id</th>
+            <th>Group Name</th>
+            <th>OS Version</th>
+            <th>Agent State</th>
+            <th>Agent Version</th>
+            <th>Connecting IP Address</th>
+            <th>Connecting FQDN</th>
+            <th>EC2 Instance ID</th>
+            <th>EC2 Account ID</th>
+            <th>EC2 Kernel ID</th>
+            <th>EC2 Image ID</th>
+            <th>EC2 Availability Zone</th>
+            <th>EC2 Region</th>
+            <th>EC2 Private IP Address</th>
+            <th>EC2 Instance Type</th>
+            <th>EC2 Security Groups</th>
+            <th>Firewall Policy</th>
+            <th>Firewall Policy Status</th>
+            <th>Firewall Status</th>
+            <th>Group ID</th>
+            <th>Hostname</th>
+            <th>Kernel Release</th>
+            <th>Kernel Version</th>
+            <th>Last State Change at</th>
+            <th>OS Architecture</th>
+            <th>OS Distribution</th>
+            <th>Primary IP Address</th>
+            <th>Read-only Mode</th>
+            <th>Reported FQDN</th>
+            <th>Self-verification Failed</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for curr_data in result.data %}
+        <tr>
+            <td>
+                {% if curr_data.os_type %}
+                {{curr_data.os_type}}
+                {% endif %}
+            </td>
+            <td><a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['host name'], 'value': '{{curr_data.hostname}}' }], 0, {{ container.id }}, null, false);">
+                {{curr_data.hostname}}
+                &nbsp;
+                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+            </a></td>
+            {% if result.param.username %}
+            <td>
+                {% if curr_data.last_login_at %}
+                {{curr_data.last_login_at}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.comment %}
+                {{curr_data.comment}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.shell %}
+                {{curr_data.shell}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.gid %}
+                {{curr_data.gid}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.uid %}
+                {{curr_data.uid}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            {% if curr_data.admin%}
+            <td style="color:red">{{"Yes"}}</td>
+            {% else %}
+            <td>{{"No"}}</td>
+            {% endif %}
+            <td>
+                {% if curr_data.locked %}
+                {{"Yes"}}
+                {% else %}
+                {{"No"}}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.sid %}
+                {{curr_data.sid}}
+                {% else %}
+                {{"-"}}
+                {% endif %}
+            </td>
+            {% endif %}
+            <td>
+                {% if curr_data.server_label %}
+                {{curr_data.server_label}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.id %}
+                {{curr_data.id}}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.group_name %}
+                {{curr_data.group_name}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.platform_version %}
+                {{curr_data.platform_version}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.state %}
+                {{curr_data.state}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.daemon_version %}
+                {{curr_data.daemon_version}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.connecting_ip_address %}
+                <a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{curr_data.connecting_ip_address}}' }], 0, {{ container.id }}, null, false);">
+                    {{curr_data.connecting_ip_address}}
+                    &nbsp;
+                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                </a>
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.connecting_ip_fqdn %}
+                {{curr_data.connecting_ip_fqdn}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.aws_ec2.ec2_instance_id %}
+                <a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['cloudpassagehalo aws instance id'], 'value': '{{curr_data.aws_ec2.ec2_instance_id}}' }], 0, {{ container.id }}, null, false);">
+                    {{curr_data.aws_ec2.ec2_instance_id}}
+                    &nbsp;
+                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                </a>
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.aws_ec2.ec2_account_id %}
+                {{curr_data.aws_ec2.ec2_account_id}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.aws_ec2.ec2_kernel_id %}
+                {{curr_data.aws_ec2.ec2_kernel_id}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.aws_ec2.ec2_image_id %}
+                {{curr_data.aws_ec2.ec2_image_id}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.aws_ec2.ec2_availability_zone %}
+                {{curr_data.aws_ec2.ec2_availability_zone}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.aws_ec2.ec2_region %}
+                {{curr_data.aws_ec2.ec2_region}}
+                {% else %}
+                {{ "-" }}{% endif %}
+            </td>
+            <td>
+                {% if curr_data.aws_ec2.ec2_private_ip %}
+                <a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{curr_data.aws_ec2.ec2_private_ip}}' }], 0, {{ container.id }}, null, false);">
+                    {{curr_data.aws_ec2.ec2_private_ip}}
+                    &nbsp;
+                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                </a>
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.aws_ec2.ec2_instance_type %}
+                {{curr_data.aws_ec2.ec2_instance_type}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.aws_ec2.ec2_security_groups %}
+                {% for sec_grp in curr_data.aws_ec2.ec2_security_groups %}
+                <!-- loop for each result.data.aws_ec2.ec2_security_groups -->
+                <span class="glyphicon glyphicon-dot"></span>&nbsp;{{sec_grp}}
+                {% if not forloop.last %}<br/> {% endif %}
+                {% endfor %}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            {% if curr_data.firewall_policy %}
+            <td>
+                {% if curr_data.firewall_policy.name %}
+                {{curr_data.firewall_policy.name}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.firewall_policy.status %}
+                {{curr_data.firewall_policy.status}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>{{ "Ok" }}</td>
+            {% else %}
+            <td>{{"-"}}</td>
+            <td>{{"-"}}</td>
+            <td>{{ "No Firewall Policy is assigned to the server" }}</td>
+            {% endif %}
+            <td>
+                {% if curr_data.group_id %}
+                {{curr_data.group_id}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td><a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['host name'], 'value': '{{curr_data.hostname}}' }], 0, {{ container.id }}, null, false);">
+                {{curr_data.hostname}}
+                &nbsp;
+                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+            </a>
+            </td>
+            <td>
+                {% if curr_data.os_version %}
+                {{curr_data.os_version}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.kernel_version %}
+                {{curr_data.kernel_version}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.last_state_change %}
+                {{curr_data.last_state_change}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.kernel_machine %}
+                {{curr_data.kernel_machine}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.platform %}
+                {{curr_data.platform}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {% if curr_data.primary_ip_address %}
+                <a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{curr_data.primary_ip_address}}' }], 0, {{ container.id }}, null, false);">
+                    {{curr_data.primary_ip_address}}
+                    &nbsp;
+                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                </a>
+                {% endif %}
+            </td>
+            <td>
+                {{curr_data.read_only}}
+            </td>
+            <td>
+                {% if curr_data.reported_fqdn %}
+                {{curr_data.reported_fqdn}}
+                {% else %}
+                {{ "-" }}
+                {% endif %}
+            </td>
+            <td>
+                {{curr_data.self_verification_failed}}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% endfor %}
+</div>
+<script>
+    $.extend(true, $.fn.dataTable.defaults, {
+        "bLengthChange": false,
+        "language": {
+            "paginate": {
+                "previous": "<i class='fa fa-angle-left fa-lg'></i>",
+                "next": "<i class='fa fa-angle-right fa-lg'></i>"
+            }
+        },
+        "dom": '<"top"f>rt<"bottom"ip><"clear">',
+        drawCallback: function(settings) {
+            var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+            pagination.toggle(this.api().page.info().pages > 1);
+        }
+    });
+    $('.datatable').DataTable();
+</script>
+{% endblock %} <!-- Main Start Block -->
