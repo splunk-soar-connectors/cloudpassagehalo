@@ -105,7 +105,7 @@ of Phantom Cyber Corporation.
     <table class="wf-table-vertical">
         {% if result.param.aws_instance_id %}
         <tr>
-            <td>Aws instance ID: </td>
+            <td>Aws instance ID</td>
             <td><a href="javascript:;"
                    onclick="context_menu(this, [{'contains': ['cloudpassagehalo aws instance id'], 'value': '{{result.param.aws_instance_id}}' }], 0, {{ container.id }}, null, false);">
                 {{result.param.aws_instance_id}}
@@ -116,7 +116,7 @@ of Phantom Cyber Corporation.
         {% endif %}
         {% if result.param.ip %}
         <tr>
-            <td>IP: </td>
+            <td>IP</td>
             <td><a href="javascript:;"
                    onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{result.param.ip}}' }], 0, {{ container.id }}, null, false);">
                 {{result.param.ip}}
@@ -127,7 +127,7 @@ of Phantom Cyber Corporation.
         {% endif %}
         {% if result.param.hostname %}
         <tr>
-            <td>Hostname: </td>
+            <td>Hostname</td>
             <td><a href="javascript:;"
                    onclick="context_menu(this, [{'contains': ['host name'], 'value': '{{result.param.hostname}}' }], 0, {{ container.id }}, null, false);">
                 {{result.param.hostname}}
@@ -178,7 +178,7 @@ of Phantom Cyber Corporation.
                         {% else %}
                         <td>{{ user.admin }}</td>
                         {% endif %}
-                        <td>{{ user.last_login_at }}</td>
+                        <td>{{ user.last_login_at|default:'<div class="center">-</div>'}}</td>
                         <td>{{ user.active }}</td>
                         {% if user.uid %}
                         <td>{{ user.gid }}</td>

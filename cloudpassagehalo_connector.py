@@ -60,11 +60,9 @@ class CloudpassagehaloConnector(BaseConnector):
         """
 
         config = self.get_config()
-        self._url = config[consts.CLOUDPASSAGEHALO_CONFIG_URL]
+        self._url = config[consts.CLOUDPASSAGEHALO_CONFIG_URL].strip("/")
         self._client_id = config[consts.CLOUDPASSAGEHALO_CONFIG_CLIENT_ID]
         self._client_secret = config[consts.CLOUDPASSAGEHALO_CONFIG_CLIENT_SECRET]
-        self._header = {"Authorization": "Basic {}".format(
-            base64.b64encode("{}:{}".format(self._client_id, self._client_secret)))}
 
         return phantom.APP_SUCCESS
 
@@ -87,8 +85,9 @@ class CloudpassagehaloConnector(BaseConnector):
         except AttributeError:
             self.debug_print(consts.CLOUDPASSAGEHALO_ERR_API_UNSUPPORTED_METHOD.format(method=method))
             # set the action_result status to error, the handler function will most probably return as is
-            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_API_UNSUPPORTED_METHOD),\
-                response_data
+            return action_result.set_status(phantom.APP_ERROR,
+                                            consts.CLOUDPASSAGEHALO_ERR_API_UNSUPPORTED_METHOD.format(method=method)), \
+                   response_data
         except Exception as e:
             self.debug_print(consts.CLOUDPASSAGEHALO_EXCEPTION_OCCURRED, e)
             # set the action_result status to error, the handler function will most probably return as is
@@ -96,8 +95,12 @@ class CloudpassagehaloConnector(BaseConnector):
                 response_data
 
         try:
-            response = request_func("{}{}".format(self._url, endpoint), params=params, headers=self._header,
+            if timeout:
+                response = request_func("{}{}".format(self._url, endpoint), params=params, headers=self._header,
                                     timeout=timeout, verify=False)
+            else:
+                response = request_func("{}{}".format(self._url, endpoint), params=params, headers=self._header,
+                                        verify=False)
 
             # store the r_text in debug data, it will get dumped in the logs if an error occurs
             if hasattr(action_result, 'add_debug_data'):
@@ -130,6 +133,10 @@ class CloudpassagehaloConnector(BaseConnector):
 
         if response.status_code in ERROR_RESPONSE_DICT:
             message = ERROR_RESPONSE_DICT[response.status_code]
+
+            # To override message from actual API response
+            if isinstance(response_data, dict):
+                message = response_data.get("error", message)
 
             self.debug_print(consts.CLOUDPASSAGEHALO_ERR_FROM_SERVER.format(status=response.status_code,
                                                                             detail=message))
@@ -192,6 +199,8 @@ class CloudpassagehaloConnector(BaseConnector):
         """
 
         params = urllib.urlencode({'grant_type': 'client_credentials'})
+        self._header = {"Authorization": "Basic {}".format(
+            base64.b64encode("{}:{}".format(self._client_id, self._client_secret)))}
 
         # Querying endpoint to generate token
         generate_token_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_AUTH, action_result,
@@ -259,7 +268,7 @@ class CloudpassagehaloConnector(BaseConnector):
 
         return phantom.APP_SUCCESS, filtered_list[0]
 
-    def _get_server_information(self, param):
+    def _get_system_info(self, param):
         """ This function is used to get server information.
 
         :param param: dictionary which contains information about parameters
@@ -297,65 +306,7 @@ class CloudpassagehaloConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _check_server_for_package(self, param):
-        """ This function is used to get package information for specific server.
-
-        :param param: dictionary of input parameters
-        :return: status success/failure
-        """
-
-        action_result = self.add_action_result(ActionResult(dict(param)))
-        summary_data = action_result.update_summary({})
-
-        # Querying endpoint to generate access token
-        generate_token_status = self._generate_api_token(action_result)
-
-        # Something went wrong while generating token
-        if phantom.is_fail(generate_token_status):
-            return action_result.get_status()
-
-        # Get server ID using the given input parameters
-        server_id_res_status, server_details = self._get_server(param, action_result)
-
-        # Something went wrong while fetching server ID
-        if phantom.is_fail(server_id_res_status):
-            return action_result.get_status()
-
-        # Querying endpoint to get package information
-        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(
-            server_id=server_details["id"]), action_result)
-
-        # Something went wrong while getting package information
-        if phantom.is_fail(status):
-            return action_result.get_status()
-
-        # Get mandatory parameters
-        package_name = param[consts.CLOUDPASSAGEHALO_JSON_PACKAGE_NAME]
-
-        package_found = False
-
-        # Filter response to obtain list of findings that match the package name provided
-        if response.get("scan") and response['scan']["findings"]:
-            for finding in response["scan"]["findings"]:
-                if finding["package_name"].lower() == package_name.lower():
-                    # Add filtered data for available package
-                    action_result.add_data(finding)
-                    package_found = True
-
-        # If package is not available
-        if not package_found:
-            self.debug_print(consts.CLOUDPASSAGEHALO_INVALID_PACKAGE)
-            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_INVALID_PACKAGE)
-
-        # Update summary
-        summary_data["package_availability"] = package_found
-        summary_data["reported_fqdn"] = server_details["reported_fqdn"]
-        summary_data["primary_ip_address"] = server_details["primary_ip_address"]
-        summary_data["hostname"] = server_details["hostname"]
-
-        return action_result.set_status(phantom.APP_SUCCESS)
-
-    def _check_server_for_all_packages(self, param):
+    def _list_packages(self, param):
         """ This function is used to get all package information for specific server.
 
         :param param: dictionary of input parameters
@@ -393,15 +344,13 @@ class CloudpassagehaloConnector(BaseConnector):
         summary_data["primary_ip_address"] = server_details["primary_ip_address"]
         summary_data["hostname"] = server_details["hostname"]
 
-        # Filter response to obtain list of findings that match the package name provided
         if response.get("scan") and response['scan']["findings"]:
             for finding in response["scan"]["findings"]:
-                # Add filtered data for available package
                 action_result.add_data(finding)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _check_all_servers_for_package(self, param):
+    def _get_package(self, param):
         """ This function is used to get all servers information for specific package.
 
         :param param: dictionary of input parameters
@@ -430,14 +379,7 @@ class CloudpassagehaloConnector(BaseConnector):
         if phantom.is_fail(status):
             return action_result.get_status()
 
-        total_servers = len(response.get("servers", []))
-
-        # Fail action for invalid package name
-        if not total_servers:
-            self.debug_print(consts.CLOUDPASSAGEHALO_INVALID_PACKAGE_FOR_ALL_SERVER.format(package_name=package_name))
-            return action_result.set_status(
-                phantom.APP_ERROR,
-                consts.CLOUDPASSAGEHALO_INVALID_PACKAGE_FOR_ALL_SERVER.format(package_name=package_name))
+        total_servers = 0
 
         for server in response.get("servers", []):
             # Querying endpoint to get server information
@@ -448,69 +390,37 @@ class CloudpassagehaloConnector(BaseConnector):
             if phantom.is_fail(server_status):
                 return action_result.get_status()
 
-            if server_response.get("server"):
-                action_result.add_data(server_response["server"])
+            # Querying endpoint to get package information
+            package_status, package_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(
+                server_id=server["id"]), action_result)
+
+            # Something went wrong while getting package information
+            if phantom.is_fail(package_status):
+                return action_result.get_status()
+
+            # Filter response to obtain list of findings that match the package name provided
+            finding_list = [finding for finding in package_response.get("scan", {}).get("findings", [])
+                            if finding["package_name"].lower() == package_name.lower()]
+
+            if finding_list:
+                total_servers += 1
+                merged_details = server_response["server"]
+                merged_details.update({'packages': finding_list})
+                action_result.add_data(merged_details)
+
+        # Fail action for invalid package name
+        if not total_servers:
+            self.debug_print(consts.CLOUDPASSAGEHALO_INVALID_PACKAGE_FOR_ALL_SERVER.format(package_name=package_name))
+            return action_result.set_status(
+                phantom.APP_ERROR,
+                consts.CLOUDPASSAGEHALO_INVALID_PACKAGE_FOR_ALL_SERVER.format(package_name=package_name))
 
         # Update summary
         summary_data["total_servers"] = total_servers
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _check_server_for_process(self, param):
-        """ Function that returns information detected by specific process on the server.
-
-        :param param: dictionary of input parameters
-        :return: status success/failure
-        """
-
-        action_result = self.add_action_result(ActionResult(dict(param)))
-        summary_data = action_result.update_summary({})
-
-        # Querying endpoint to generate access token
-        generate_token_status = self._generate_api_token(action_result)
-
-        # Something went wrong
-        if phantom.is_fail(generate_token_status):
-            return action_result.get_status()
-
-        # Get server ID using the given input parameters
-        server_id_res_status, server_details = self._get_server(param, action_result)
-
-        # Something went wrong while fetching server ID
-        if phantom.is_fail(server_id_res_status):
-            return action_result.get_status()
-
-        # Getting mandatory parameter
-        process_name = param[consts.CLOUDPASSAGEHALO_JSON_PROCESS_NAME]
-
-        # Querying endpoint to get server information
-        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_PROCESSES_ENDPOINT.format(
-            server_id=server_details["id"]), action_result)
-
-        # Something went wrong
-        if phantom.is_fail(status):
-            return action_result.get_status()
-
-        process_found = 0
-
-        # Checking given process from all processes
-        for process in response["processes"]:
-            if process["process_name"].lower() == process_name.lower():
-                action_result.add_data(process)
-                process_found += 1
-
-        if not process_found:
-            self.debug_print(consts.CLOUDPASSAGEHALO_INVALID_PROCESS)
-            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_INVALID_PROCESS)
-
-        # Setting summary to count processes
-        summary_data["total_processes"] = process_found
-        summary_data["reported_fqdn"] = server_details["reported_fqdn"]
-        summary_data["primary_ip_address"] = server_details["primary_ip_address"]
-        summary_data["hostname"] = server_details["hostname"]
-        return action_result.set_status(phantom.APP_SUCCESS)
-
-    def _check_server_for_all_processes(self, param):
+    def _list_processes(self, param):
         """ Function that returns information for all running processes on the server specified by server ID.
 
         :param param: dictionary of input parameters
@@ -554,7 +464,7 @@ class CloudpassagehaloConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _check_all_servers_for_process(self, param):
+    def _get_process(self, param):
         """ Get all server details on which specified process is running.
 
        :param param: dictionary of input parameters
@@ -581,6 +491,7 @@ class CloudpassagehaloConnector(BaseConnector):
         if phantom.is_fail(resp_status):
             return action_result.get_status()
 
+        merged_details = {}
         total_servers = 0
 
         for server in response.get("servers", []):
@@ -592,22 +503,23 @@ class CloudpassagehaloConnector(BaseConnector):
             if phantom.is_fail(process_status):
                 return action_result.get_status()
 
-            if process_response.get("processes"):
-                for process in process_response.get("processes"):
-                    if process_name.lower() == process["process_name"].lower():
-                        # Querying endpoint to get server information
-                        server_status, server_response = self._make_rest_call(
-                            consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server["id"]),
-                            action_result)
+            process_list = [process for process in process_response.get("processes", [])
+                            if process_name.lower() == process["process_name"].lower()]
 
-                        # Something went wrong
-                        if phantom.is_fail(server_status):
-                            return action_result.get_status()
+            if process_list:
+                # Querying endpoint to get server information
+                server_status, server_response = self._make_rest_call(
+                    consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server["id"]),
+                    action_result)
 
-                        if server_response.get("server"):
-                            total_servers += 1
-                            action_result.add_data(server_response["server"])
-                        break
+                # Something went wrong
+                if phantom.is_fail(server_status):
+                    return action_result.get_status()
+
+                total_servers += 1
+                merged_details = server_response["server"]
+                merged_details.update({'processes': process_list})
+                action_result.add_data(merged_details)
 
         # Fail action in case of invalid process name
         if not total_servers:
@@ -621,89 +533,7 @@ class CloudpassagehaloConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _check_server_for_vulnerability(self, param):
-        """ For the server specified in the call URL, return recent vulnerability scan result corresponding to the
-        specified cve number on that server.
-
-        :param param: dictionary of input parameters
-        :return: status success/failure
-        """
-
-        action_result = self.add_action_result(ActionResult(dict(param)))
-        summary_data = action_result.update_summary({})
-
-        # Get mandatory parameters
-        cve_number = param[consts.CLOUDPASSAGEHALO_JSON_CVE_NUMBER]
-
-        # Generate token
-        token_generation_status = self._generate_api_token(action_result)
-
-        # Something went wrong while generating token
-        if phantom.is_fail(token_generation_status):
-            return action_result.get_status()
-
-        # Get server ID using the given input parameters
-        server_id_res_status, server_details = self._get_server(param, action_result)
-
-        # Something went wrong while fetching server ID
-        if phantom.is_fail(server_id_res_status):
-            return action_result.get_status()
-
-        # Make REST call
-        resp_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(
-            server_id=server_details["id"]), action_result)
-
-        # Something went wrong while getting scanned data
-        if phantom.is_fail(resp_status):
-            return action_result.get_status()
-
-        # Filter response to obtain list of findings that match the cve number provided
-        updated_findings_list = list()
-        critical_findings_count = 0
-        non_critical_findings_count = 0
-        ok_findings_count = 0
-        for finding in response["scan"].get("findings", []):
-            cve_entries = finding.get("cve_entries")
-            if cve_entries is not None:
-                filtered_list = filter(lambda x: x['cve_entry'] == cve_number, cve_entries)
-                if filtered_list:
-                    finding["cve_entries"] = filtered_list
-                    if finding["status"] == "bad":
-                        if finding["critical"]:
-                            critical_findings_count += 1
-                        else:
-                            non_critical_findings_count += 1
-                    elif finding["status"] == "good":
-                        ok_findings_count += 1
-                    updated_findings_list.append(finding)
-
-            # Overriding response so as to include only the filtered data
-            response["scan"]["findings"] = updated_findings_list
-
-        # Fail action in case of invalid cve number
-        if not response["scan"]["findings"]:
-            self.debug_print(consts.CLOUDPASSAGEHALO_INVALID_VULNERABILITY.format(cve_number=cve_number))
-            return action_result.set_status(
-                phantom.APP_ERROR,
-                consts.CLOUDPASSAGEHALO_INVALID_VULNERABILITY.format(cve_number=cve_number))
-
-        response["scan"]["critical_findings_count"] = critical_findings_count
-        response["scan"]["ok_findings_count"] = ok_findings_count
-        response["scan"]["non_critical_findings_count"] = non_critical_findings_count
-
-        # Updating summary
-        summary_data["critical_findings_count"] = critical_findings_count
-        summary_data["non_critical_findings_count"] = non_critical_findings_count
-        summary_data["ok_findings_count"] = ok_findings_count
-        summary_data["reported_fqdn"] = server_details["reported_fqdn"]
-        summary_data["primary_ip_address"] = server_details["primary_ip_address"]
-        summary_data["hostname"] = server_details["hostname"]
-
-        action_result.add_data(response)
-
-        return action_result.set_status(phantom.APP_SUCCESS)
-
-    def _check_server_for_all_vulnerabilities(self, param):
+    def _list_vulnerabilities(self, param):
         """ For the server specified in the call URL, returns all results detected by the most recent vulnerability
         scan on that server. For each vulnerable package, all of its known vulnerabilities (CVE's) are listed as well.
 
@@ -736,9 +566,9 @@ class CloudpassagehaloConnector(BaseConnector):
         if phantom.is_fail(resp_status):
             return action_result.get_status()
 
-        summary_data["critical_findings_count"] = response["scan"]["critical_findings_count"]
-        summary_data["non_critical_findings_count"] = response["scan"]["non_critical_findings_count"]
-        summary_data["ok_findings_count"] = response["scan"]["ok_findings_count"]
+        summary_data["critical_packages_count"] = response["scan"]["critical_findings_count"]
+        summary_data["non_critical_packages_count"] = response["scan"]["non_critical_findings_count"]
+        summary_data["ok_packages_count"] = response["scan"]["ok_findings_count"]
         summary_data["reported_fqdn"] = server_details["reported_fqdn"]
         summary_data["primary_ip_address"] = server_details["primary_ip_address"]
         summary_data["hostname"] = server_details["hostname"]
@@ -747,7 +577,7 @@ class CloudpassagehaloConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _check_all_servers_for_vulnerability(self, param):
+    def _get_vulnerability(self, param):
         """ Obtain all servers that have a package containing the specified CVE (Common Vulnerability and Exposure
         number).
 
@@ -779,14 +609,7 @@ class CloudpassagehaloConnector(BaseConnector):
         if phantom.is_fail(resp_status):
             return action_result.get_status()
 
-        # Fail action in case of invalid cve number
-        if not response["count"]:
-            self.debug_print(consts.CLOUDPASSAGEHALO_INVALID_VULNERABILITY_FOR_ALL_SERVER.format(cve_number=cve_number))
-            return action_result.set_status(
-                phantom.APP_ERROR,
-                consts.CLOUDPASSAGEHALO_INVALID_VULNERABILITY_FOR_ALL_SERVER.format(cve_number=cve_number))
-
-        summary_data["total_servers"] = response["count"]
+        total_servers = 0
 
         for server in response.get("servers", []):
             # Querying endpoint to get server information
@@ -797,56 +620,60 @@ class CloudpassagehaloConnector(BaseConnector):
             if phantom.is_fail(server_status):
                 return action_result.get_status()
 
-            action_result.add_data(server_response["server"])
+            # Querying endpoint to get server information
+            vuln_status, vuln_response = self._make_rest_call(
+                consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(server_id=server["id"]), action_result)
+
+            # Something went wrong
+            if phantom.is_fail(vuln_status):
+                return action_result.get_status()
+
+            # Filter response to obtain list of findings that match the cve number provided
+            updated_findings_list = list()
+            critical_findings_count = 0
+            non_critical_findings_count = 0
+            ok_findings_count = 0
+            for finding in vuln_response["scan"].get("findings", []):
+                cve_entries = finding.get("cve_entries")
+                if cve_entries is not None:
+                    filtered_list = filter(lambda x: x['cve_entry'] == cve_number, cve_entries)
+                    if filtered_list:
+                        finding["cve_entries"] = filtered_list
+                        if finding["status"] == "bad":
+                            if finding["critical"]:
+                                critical_findings_count += 1
+                            else:
+                                non_critical_findings_count += 1
+                        elif finding["status"] == "good":
+                            ok_findings_count += 1
+                        updated_findings_list.append(finding)
+
+                # Overriding response so as to include only the filtered data
+                vuln_response["scan"]["findings"] = updated_findings_list
+
+            if vuln_response["scan"]["findings"]:
+                total_servers += 1
+                vuln_response["scan"]["critical_findings_count"] = critical_findings_count
+                vuln_response["scan"]["ok_findings_count"] = ok_findings_count
+                vuln_response["scan"]["non_critical_findings_count"] = non_critical_findings_count
+
+                # Adding data to action_result
+                merged_details = server_response["server"]
+                merged_details.update(vuln_response)
+                action_result.add_data(merged_details)
+
+        # Fail action in case of invalid cve number
+        if not response["count"]:
+            self.debug_print(consts.CLOUDPASSAGEHALO_INVALID_VULNERABILITY_FOR_ALL_SERVER.format(cve_number=cve_number))
+            return action_result.set_status(
+                phantom.APP_ERROR,
+                consts.CLOUDPASSAGEHALO_INVALID_VULNERABILITY_FOR_ALL_SERVER.format(cve_number=cve_number))
+
+        summary_data["total_servers"] = total_servers
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _check_server_for_user(self, param):
-        """ Returns user information for server.
-
-        :param param: dictionary of input parameters
-        :return: status success/failure
-        """
-
-        action_result = self.add_action_result(ActionResult(dict(param)))
-        summary_data = action_result.update_summary({})
-
-        # Querying endpoint to generate access token
-        generate_token_status = self._generate_api_token(action_result)
-
-        # Something went wrong
-        if phantom.is_fail(generate_token_status):
-            return action_result.get_status()
-
-        # Get server ID using the given input parameters
-        server_id_res_status, server_details = self._get_server(param, action_result)
-
-        # Something went wrong while fetching server ID
-        if phantom.is_fail(server_id_res_status):
-            return action_result.get_status()
-
-        # Getting mandatory parameter
-        username = param[consts.CLOUDPASSAGEHALO_JSON_USERNAME]
-
-        # Querying endpoint to get server information
-        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_USER_ENDPOINT.format(
-            server_id=server_details["id"], username=username), action_result)
-
-        # Something went wrong
-        if phantom.is_fail(status):
-            return action_result.get_status()
-
-        # Adding data to action_result
-        action_result.add_data(response)
-
-        # Setting summary to count processes
-        summary_data["user_availability"] = True
-        summary_data["reported_fqdn"] = server_details["reported_fqdn"]
-        summary_data["primary_ip_address"] = server_details["primary_ip_address"]
-        summary_data["hostname"] = server_details["hostname"]
-        return action_result.set_status(phantom.APP_SUCCESS)
-
-    def _check_server_for_all_users(self, param):
+    def _list_users(self, param):
         """ Function that returns all users' information for server.
 
         :param param: dictionary of input parameters
@@ -892,7 +719,7 @@ class CloudpassagehaloConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _check_all_servers_for_user(self, param):
+    def _get_user(self, param):
         """ This function is used to get all servers information for specific user.
 
         :param param: dictionary of input parameters
@@ -922,15 +749,13 @@ class CloudpassagehaloConnector(BaseConnector):
         if phantom.is_fail(status):
             return action_result.get_status()
 
-        total_servers = len(response.get("accounts", []))
-
-        # Fail action in case of invalid username
-        if not total_servers:
-            self.debug_print(consts.CLOUDPASSAGEHALO_INVALID_USERNAME_FOR_ALL_SERVER.format(username=username))
-            return action_result.set_status(
-                phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_INVALID_USERNAME_FOR_ALL_SERVER.format(username=username))
+        total_servers = 0
 
         for account in response.get("accounts", []):
+
+            if account['username'] != username:
+                continue
+
             # Querying endpoint to get server information
             server_status, server_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(
                 server_id=account["server_id"]), action_result)
@@ -939,9 +764,25 @@ class CloudpassagehaloConnector(BaseConnector):
             if phantom.is_fail(server_status):
                 return action_result.get_status()
 
-            merged_details = account
-            merged_details.update(server_response.get("server"))
+            # Querying endpoint to get server information
+            account_status, account_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_USER_ENDPOINT.format(
+                server_id=account["server_id"], username=username), action_result)
+
+            # Something went wrong
+            if phantom.is_fail(account_status):
+                return action_result.get_status()
+
+            # Adding data to action_result
+            total_servers += 1
+            merged_details = server_response.get("server")
+            merged_details.update(account_response)
             action_result.add_data(merged_details)
+
+        # Fail action in case of invalid username
+        if not total_servers:
+            self.debug_print(consts.CLOUDPASSAGEHALO_INVALID_USERNAME_FOR_ALL_SERVER.format(username=username))
+            return action_result.set_status(
+                phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_INVALID_USERNAME_FOR_ALL_SERVER.format(username=username))
 
         # Update summary
         summary_data["total_servers"] = total_servers
@@ -956,19 +797,15 @@ class CloudpassagehaloConnector(BaseConnector):
         """
 
         # Dictionary mapping each action with its corresponding actions
-        action_mapping = {'check_all_servers_for_process': self._check_all_servers_for_process,
-                          'check_server_for_all_packages': self._check_server_for_all_packages,
-                          'check_server_for_process': self._check_server_for_process,
-                          'check_server_for_package': self._check_server_for_package,
-                          'check_server_for_all_processes': self._check_server_for_all_processes,
-                          'get_server_information': self._get_server_information,
-                          'check_all_servers_for_package': self._check_all_servers_for_package,
-                          'check_server_for_all_vulnerabilities': self._check_server_for_all_vulnerabilities,
-                          'check_server_for_vulnerability': self._check_server_for_vulnerability,
-                          'check_all_servers_for_vulnerability': self._check_all_servers_for_vulnerability,
-                          'check_server_for_user': self._check_server_for_user,
-                          'check_all_servers_for_user': self._check_all_servers_for_user,
-                          'check_server_for_all_users': self._check_server_for_all_users,
+        action_mapping = {'get_process': self._get_process,
+                          'list_packages': self._list_packages,
+                          'list_processes': self._list_processes,
+                          'get_system_info': self._get_system_info,
+                          'get_package': self._get_package,
+                          'list_vulnerabilities': self._list_vulnerabilities,
+                          'get_vulnerability': self._get_vulnerability,
+                          'get_user': self._get_user,
+                          'list_users': self._list_users,
                           'test_asset_connectivity': self._test_asset_connectivity}
 
         action = self.get_action_identifier()

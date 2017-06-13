@@ -7,7 +7,7 @@
   "licence": "Copyright (c) Phantom Cyber Corporation 2017",
   "main_module": "cloudpassagehalo_connector.pyc",
   "type": "investigative",
-  "app_version": "1.0.1",
+  "app_version": "1.0.2",
   "utctime_updated": "",
   "product_vendor": "CloudPassage",
   "product_name": "CloudPassage Halo",
@@ -46,11 +46,11 @@
       "versions": "EQ(*)"
     },
     {
-      "action": "get server information",
+      "action": "get system info",
       "description": "Returns the server information",
-      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input paramaters(aws_instance_id/ip/hostname).",
+      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input parameters(aws_instance_id/ip/hostname).",
       "type": "investigate",
-      "identifier": "get_server_information",
+      "identifier": "get_system_info",
       "read_only": true,
       "parameters": {
         "aws_instance_id": {
@@ -86,7 +86,7 @@
         "height": 5,
         "type": "custom",
         "view": "cloudpassagehalo_view.display_details",
-        "title": "Get Server Information"
+        "title": "Get System Information"
       },
       "output": [
         {
@@ -330,185 +330,11 @@
       "versions": "EQ(*)"
     },
     {
-      "action": "check server for package",
-      "description": "Return package information of a server",
-      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input paramaters(aws_instance_id/ip/hostname).",
-      "type": "investigate",
-      "identifier": "check_server_for_package",
-      "read_only": true,
-      "parameters": {
-        "aws_instance_id": {
-          "description": "AWS instance ID",
-          "order": 0,
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo aws instance id"
-          ],
-          "primary": true
-        },
-        "ip": {
-          "description": "IP",
-          "order": 1,
-          "data_type": "string",
-          "contains": [
-            "ip"
-          ],
-          "primary": true
-        },
-        "hostname": {
-          "description": "Hostname",
-          "order": 2,
-          "data_type": "string",
-          "contains": [
-            "host name"
-          ],
-          "primary": true
-        },
-        "package_name": {
-          "required": true,
-          "description": "Package name",
-          "order": 3,
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo package name"
-          ],
-          "primary": true
-        }
-      },
-      "render": {
-        "width": 12,
-        "height": 5,
-        "type": "custom",
-        "view": "cloudpassagehalo_view.display_details",
-        "title": "Check Server For Package"
-      },
-      "output": [
-        {
-          "data_path": "action_result.data.*.status",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.vendor",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.package_name",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo package name"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.url",
-          "data_type": "string",
-          "contains": [
-            "url"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.package_version",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.cpe",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.critical",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.cve_entries.*.cve_entry",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo cve number"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.cve_entries.*.cvss_score",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.cve_entries.*.suppressed",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.id",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.install_date",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.status",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.message",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.parameter.aws_instance_id",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo aws instance id"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.ip",
-          "data_type": "string",
-          "contains": [
-            "ip"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.hostname",
-          "data_type": "string",
-          "contains": [
-            "host name"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.package_name",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo package name"
-          ]
-        },
-        {
-          "data_path": "action_result.summary.package_availability",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.summary.reported_fqdn",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.summary.primary_ip_address",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.summary.hostname",
-          "data_type": "string"
-        },
-        {
-          "data_path": "summary.total_objects",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "summary.total_objects_successful",
-          "data_type": "numeric"
-        }
-      ],
-      "versions": "EQ(*)"
-    },
-    {
-      "action": "check server for all packages",
+      "action": "list packages",
       "description": "Returns all packages' information of a server",
-      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input paramaters(aws_instance_id/ip/hostname).",
+      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input parameters(aws_instance_id/ip/hostname).",
       "type": "investigate",
-      "identifier": "check_server_for_all_packages",
+      "identifier": "list_packages",
       "read_only": true,
       "parameters": {
         "aws_instance_id": {
@@ -544,7 +370,7 @@
         "height": 5,
         "type": "custom",
         "view": "cloudpassagehalo_view.display_details",
-        "title": "Check Server For All Packages"
+        "title": "List Packages"
       },
       "output": [
         {
@@ -661,10 +487,10 @@
       "versions": "EQ(*)"
     },
     {
-      "action": "check all servers for package",
-      "description": "Returns servers' information for a package",
+      "action": "get package",
+      "description": "Returns information about package and its servers",
       "type": "investigate",
-      "identifier": "check_all_servers_for_package",
+      "identifier": "get_package",
       "read_only": true,
       "parameters": {
         "package_name": {
@@ -683,7 +509,7 @@
         "height": 5,
         "type": "custom",
         "view": "cloudpassagehalo_view.display_details",
-        "title": "Check All Servers For Package"
+        "title": "Get Package"
       },
       "output": [
         {
@@ -873,6 +699,63 @@
         {
           "data_path": "action_result.data.*.proxy",
           "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.id",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.cpe",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.url",
+          "data_type": "string",
+          "contains": [
+            "url"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.status",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.vendor",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.critical",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.install_date",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.package_name",
+          "data_type": "string",
+          "contains": [
+            "cloudpassagehalo package name"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.package_version",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.cve_entries.*.cve_entry",
+          "data_type": "string",
+          "contains": [
+            "cloudpassagehalo cve number"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.cve_entries.*.cvss_score",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.packages.*.cve_entries.*.suppressed",
+          "data_type": "boolean"
         },
         {
           "data_path": "action_result.status",
@@ -905,177 +788,11 @@
       "versions": "EQ(*)"
     },
     {
-      "action": "check server for process",
-      "description": "Returns process information of a server",
-      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input paramaters(aws_instance_id/ip/hostname).",
-      "type": "investigate",
-      "identifier": "check_server_for_process",
-      "read_only": true,
-      "parameters": {
-        "aws_instance_id": {
-          "description": "AWS instance ID",
-          "order": 0,
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo aws instance id"
-          ],
-          "primary": true
-        },
-        "ip": {
-          "description": "IP",
-          "order": 1,
-          "data_type": "string",
-          "contains": [
-            "ip"
-          ],
-          "primary": true
-        },
-        "hostname": {
-          "description": "Hostname",
-          "order": 2,
-          "data_type": "string",
-          "contains": [
-            "host name"
-          ],
-          "primary": true
-        },
-        "process_name": {
-          "required": true,
-          "description": "Process name",
-          "order": 3,
-          "data_type": "string",
-          "contains": [
-            "process name"
-          ],
-          "primary": true
-        }
-      },
-      "render": {
-        "width": 12,
-        "height": 5,
-        "type": "custom",
-        "title": "Check Server For Process",
-        "view": "cloudpassagehalo_view.display_details"
-      },
-      "output": [
-        {
-          "data_path": "action_result.status",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.message",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.pid",
-          "data_type": "string",
-          "contains": [
-            "pid"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.ppid",
-          "data_type": "string",
-          "contains": [
-            "pid"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.user",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.state",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.command",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.cpu_percent",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.cpu_usage",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.memory_usage",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.process_name",
-          "data_type": "string",
-          "contains": [
-            "process name"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.memory_percent",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.parameter.aws_instance_id",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo aws instance id"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.ip",
-          "data_type": "string",
-          "contains": [
-            "ip"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.hostname",
-          "data_type": "string",
-          "contains": [
-            "host name"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.process_name",
-          "data_type": "string",
-          "contains": [
-            "process name"
-          ]
-        },
-        {
-          "data_path": "action_result.summary.total_processes",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.summary.reported_fqdn",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.summary.primary_ip_address",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.summary.hostname",
-          "data_type": "string"
-        },
-        {
-          "data_path": "summary.total_objects",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "summary.total_objects_successful",
-          "data_type": "numeric"
-        }
-      ],
-      "versions": "EQ(*)"
-    },
-    {
-      "action": "check server for all processes",
+      "action": "list processes",
       "description": "Returns summary information for all running processes on the server",
-      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input paramaters(aws_instance_id/ip/hostname).",
+      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input parameters(aws_instance_id/ip/hostname).",
       "type": "investigate",
-      "identifier": "check_server_for_all_processes",
+      "identifier": "list_processes",
       "read_only": true,
       "parameters": {
         "aws_instance_id": {
@@ -1110,7 +827,7 @@
         "width": 12,
         "height": 5,
         "type": "custom",
-        "title": "Check Server For All Processes",
+        "title": "List Processes",
         "view": "cloudpassagehalo_view.display_details"
       },
       "output": [
@@ -1220,10 +937,10 @@
       "versions": "EQ(*)"
     },
     {
-      "action": "check all servers for process",
-      "description": "Returns all servers' information for a process",
+      "action": "get process",
+      "description": "Returns information about process and its servers",
       "type": "investigate",
-      "identifier": "check_all_servers_for_process",
+      "identifier": "get_process",
       "read_only": true,
       "parameters": {
         "process_name": {
@@ -1242,7 +959,7 @@
         "height": 5,
         "type": "custom",
         "view": "cloudpassagehalo_view.display_details",
-        "title": "Check All Servers For Process"
+        "title": "Get Process"
       },
       "output": [
         {
@@ -1431,6 +1148,55 @@
         },
         {
           "data_path": "action_result.data.*.proxy",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.pid",
+          "data_type": "string",
+          "contains": [
+            "pid"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.ppid",
+          "data_type": "string",
+          "contains": [
+            "pid"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.user",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.state",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.command",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.cpu_percent",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.cpu_usage",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.memory_usage",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.process_name",
+          "data_type": "string",
+          "contains": [
+            "process name"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.processes.*.memory_percent",
           "data_type": "string"
         },
         {
@@ -1464,284 +1230,11 @@
       "versions": "EQ(*)"
     },
     {
-      "action": "check server for vulnerability",
-      "description": "Returns vulnerability information of a server",
-      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input paramaters(aws_instance_id/ip/hostname).",
-      "type": "investigate",
-      "identifier": "check_server_for_vulnerability",
-      "read_only": true,
-      "parameters": {
-        "aws_instance_id": {
-          "description": "AWS instance ID",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo aws instance id"
-          ],
-          "primary": true,
-          "order": 0
-        },
-        "ip": {
-          "description": "IP",
-          "data_type": "string",
-          "primary": true,
-          "contains": [
-            "ip"
-          ],
-          "order": 1
-        },
-        "hostname": {
-          "description": "Hostname",
-          "data_type": "string",
-          "primary": true,
-          "contains": [
-            "host name"
-          ],
-          "order": 2
-        },
-        "cve_number": {
-          "required": true,
-          "description": "Common Vulnerability and Exposure number",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo cve number"
-          ],
-          "primary": true,
-          "order": 3
-        }
-      },
-      "render": {
-        "width": 12,
-        "height": 5,
-        "type": "custom",
-        "title": "Check Server For Vulnerability",
-        "view": "cloudpassagehalo_view.display_details"
-      },
-      "output": [
-        {
-          "data_path": "action_result.data.*.id",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.hostname",
-          "data_type": "string",
-          "contains": [
-            "host name"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.connecting_ip_address",
-          "data_type": "string",
-          "contains": [
-            "ip"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.state",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.id",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.url",
-          "data_type": "string",
-          "contains": [
-            "url"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.scan.module",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.status",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.created_at",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.completed_at",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.analysis_started_at",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.analysis_completed_at",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.agent_started_at",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.agent_completed_at",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.server_id",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.server_hostname",
-          "data_type": "string",
-          "contains": [
-            "host name"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.scan.server_url",
-          "data_type": "string",
-          "contains": [
-            "url"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.scan.critical_findings_count",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.data.*.scan.non_critical_findings_count",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.data.*.scan.ok_findings_count",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.id",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.url",
-          "data_type": "string",
-          "contains": [
-            "url"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.package_name",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo package name"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.package_version",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.critical",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.status",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.cve_entry",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo cve number"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.cvss_score",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.suppressed",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.cpe",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.scan.findings.*.vendor",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.status",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.message",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.parameter.aws_instance_id",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo aws instance id"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.ip",
-          "data_type": "string",
-          "contains": [
-            "ip"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.hostname",
-          "data_type": "string",
-          "contains": [
-            "host name"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.cve_number",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo cve number"
-          ]
-        },
-        {
-          "data_path": "action_result.summary.critical_findings_count",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.summary.non_critical_findings_count",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.summary.ok_findings_count",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.summary.reported_fqdn",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.summary.primary_ip_address",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.summary.hostname",
-          "data_type": "string"
-        },
-        {
-          "data_path": "summary.total_objects",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "summary.total_objects_successful",
-          "data_type": "numeric"
-        }
-      ],
-      "versions": "EQ(*)"
-    },
-    {
-      "action": "check server for all vulnerabilities",
+      "action": "list vulnerabilities",
       "description": "Returns all vulnerabilities' information of a server",
-      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input paramaters(aws_instance_id/ip/hostname).",
+      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input parameters(aws_instance_id/ip/hostname).",
       "type": "investigate",
-      "identifier": "check_server_for_all_vulnerabilities",
+      "identifier": "list_vulnerabilities",
       "read_only": true,
       "parameters": {
         "aws_instance_id": {
@@ -1776,7 +1269,7 @@
         "width": 12,
         "height": 5,
         "type": "custom",
-        "title": "Check Server For All Vulnerabilities",
+        "title": "List Vulnerabilities",
         "view": "cloudpassagehalo_view.display_details"
       },
       "output": [
@@ -1958,15 +1451,15 @@
           ]
         },
         {
-          "data_path": "action_result.summary.critical_findings_count",
+          "data_path": "action_result.summary.critical_packages_count",
           "data_type": "numeric"
         },
         {
-          "data_path": "action_result.summary.non_critical_findings_count",
+          "data_path": "action_result.summary.non_critical_packages_count",
           "data_type": "numeric"
         },
         {
-          "data_path": "action_result.summary.ok_findings_count",
+          "data_path": "action_result.summary.ok_packages_count",
           "data_type": "numeric"
         },
         {
@@ -1993,10 +1486,10 @@
       "versions": "EQ(*)"
     },
     {
-      "action": "check all servers for vulnerability",
-      "description": "Returns all servers' information for vulnerability",
+      "action": "get vulnerability",
+      "description": "Returns information about vulnerability and its servers",
       "type": "investigate",
-      "identifier": "check_all_servers_for_vulnerability",
+      "identifier": "get_vulnerability",
       "read_only": true,
       "parameters": {
         "cve_number": {
@@ -2015,7 +1508,7 @@
         "height": 5,
         "type": "custom",
         "view": "cloudpassagehalo_view.display_details",
-        "title": "Check All Servers For Vulnerability"
+        "title": "Get Vulnerability"
       },
       "output": [
         {
@@ -2207,6 +1700,133 @@
           "data_type": "string"
         },
         {
+          "data_path": "action_result.data.*.scan.id",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.url",
+          "data_type": "string",
+          "contains": [
+            "url"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.scan.module",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.status",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.id",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.cpe",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.url",
+          "data_type": "string",
+          "contains": [
+            "url"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.status",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.vendor",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.critical",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.cve_entry",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.cvss_score",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.suppressed",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.package_name",
+          "data_type": "string",
+          "contains": [
+            "cloudpassagehalo package name"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.package_version",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.findings.*.install_date",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.server_id",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.created_at",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.server_url",
+          "data_type": "string",
+          "contains": [
+            "url"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.scan.completed_at",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.server_hostname",
+          "data_type": "string",
+          "contains": [
+            "host name"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.scan.agent_started_at",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.ok_findings_count",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.data.*.scan.agent_completed_at",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.analysis_started_at",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.analysis_completed_at",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.scan.critical_findings_count",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.data.*.scan.non_critical_findings_count",
+          "data_type": "numeric"
+        },
+        {
           "data_path": "action_result.status",
           "data_type": "string"
         },
@@ -2237,254 +1857,11 @@
       "versions": "EQ(*)"
     },
     {
-      "action": "check server for user",
-      "description": "Returns user information of a server",
-      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input paramaters(aws_instance_id/ip/hostname).",
-      "type": "investigate",
-      "identifier": "check_server_for_user",
-      "read_only": true,
-      "parameters": {
-        "aws_instance_id": {
-          "description": "AWS instance ID",
-          "order": 0,
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo aws instance id"
-          ],
-          "primary": true
-        },
-        "ip": {
-          "description": "IP",
-          "order": 1,
-          "data_type": "string",
-          "contains": [
-            "ip"
-          ],
-          "primary": true
-        },
-        "hostname": {
-          "description": "Hostname",
-          "order": 2,
-          "data_type": "string",
-          "contains": [
-            "host name"
-          ],
-          "primary": true
-        },
-        "username": {
-          "required": true,
-          "description": "Username",
-          "order": 3,
-          "contains": [
-            "user name"
-          ],
-          "data_type": "string",
-          "primary": true
-        }
-      },
-      "render": {
-        "width": 12,
-        "height": 5,
-        "type": "custom",
-        "title": "Check Server For User",
-        "view": "cloudpassagehalo_view.display_details"
-      },
-      "output": [
-        {
-          "data_path": "action_result.data.*.account.gid",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.uid",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.sid",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.url",
-          "data_type": "string",
-          "contains": [
-            "url"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.account.home",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.admin",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.account.shell",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.active",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.account.groups",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.comment",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.locked",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.account.username",
-          "data_type": "string",
-          "contains": [
-            "user name"
-          ]
-        },
-        {
-          "data_path": "action_result.data.*.account.full_name",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.last_login_at",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.last_login_from",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.home_exists",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.account.password_required",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.account.password_changeable",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.account.sudo_access",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.days_since_disabled",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.data.*.account.last_password_change",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.expires",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.disabled_after_days_inactive",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.data.*.account.days_warn_before_password_expiration",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.data.*.account.maximum_days_between_password_changes",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.data.*.account.minimum_days_between_password_changes",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.data.*.account.password_expires",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.password_expired",
-          "data_type": "boolean"
-        },
-        {
-          "data_path": "action_result.data.*.account.ssh_authorized_keys",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.data.*.account.ssh_acl",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.status",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.message",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.parameter.aws_instance_id",
-          "data_type": "string",
-          "contains": [
-            "cloudpassagehalo aws instance id"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.ip",
-          "data_type": "string",
-          "contains": [
-            "ip"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.hostname",
-          "data_type": "string",
-          "contains": [
-            "host name"
-          ]
-        },
-        {
-          "data_path": "action_result.parameter.username",
-          "data_type": "string",
-          "contains": [
-            "user name"
-          ]
-        },
-        {
-          "data_path": "action_result.summary.user_availability",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "action_result.summary.reported_fqdn",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.summary.primary_ip_address",
-          "data_type": "string"
-        },
-        {
-          "data_path": "action_result.summary.hostname",
-          "data_type": "string"
-        },
-        {
-          "data_path": "summary.total_objects",
-          "data_type": "numeric"
-        },
-        {
-          "data_path": "summary.total_objects_successful",
-          "data_type": "numeric"
-        }
-      ],
-      "versions": "EQ(*)"
-    },
-    {
-      "action": "check server for all users",
+      "action": "list users",
       "description": "Returns all users' information of a server",
-      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input paramaters(aws_instance_id/ip/hostname).",
+      "verbose": "At least one parameter out of <b>aws_instance_id</b>, <b>ip</b> and <b>hostname</b> is mandatory. When we get multiple servers with same hostname, we will consider first matching server if in case user only provides the hostname in input parameters(aws_instance_id/ip/hostname).",
       "type": "investigate",
-      "identifier": "check_server_for_all_users",
+      "identifier": "list_users",
       "read_only": true,
       "parameters": {
         "aws_instance_id": {
@@ -2519,7 +1896,7 @@
         "width": 12,
         "height": 5,
         "type": "custom",
-        "title": "Check Server For All Users",
+        "title": "List Users",
         "view": "cloudpassagehalo_view.display_details"
       },
       "output": [
@@ -2657,10 +2034,10 @@
       "versions": "EQ(*)"
     },
     {
-      "action": "check all servers for user",
-      "description": "Returns all servers' information for a user",
+      "action": "get user",
+      "description": "Returns information about user and its servers",
       "type": "investigate",
-      "identifier": "check_all_servers_for_user",
+      "identifier": "get_user",
       "read_only": true,
       "parameters": {
         "username": {
@@ -2679,7 +2056,7 @@
         "height": 5,
         "type": "custom",
         "view": "cloudpassagehalo_view.display_details",
-        "title": "Check All Servers For User"
+        "title": "Get User"
       },
       "output": [
         {
@@ -2868,6 +2245,136 @@
         },
         {
           "data_path": "action_result.data.*.proxy",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.gid",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.uid",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.sid",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.url",
+          "data_type": "string",
+          "contains": [
+            "url"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.account.home",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.admin",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.account.shell",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.active",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.account.groups",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.comment",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.locked",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.account.ssh_acl",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.username",
+          "data_type": "string",
+          "contains": [
+            "user name"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.account.full_name",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.home_exists",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.account.password_required",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.account.password_changeable",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.account.sudo_access",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.sudo_access.*.as_user.*",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.last_login_at",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.last_login_from",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.days_since_disabled",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.data.*.account.last_password_change",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.expires",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.disabled_after_days_inactive",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.data.*.account.days_warn_before_password_expiration",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.data.*.account.maximum_days_between_password_changes",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.data.*.account.minimum_days_between_password_changes",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.data.*.account.password_expires",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.account.password_expired",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.account.ssh_authorized_keys",
           "data_type": "string"
         },
         {
