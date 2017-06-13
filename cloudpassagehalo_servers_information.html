@@ -27,6 +27,20 @@ of Phantom Cyber Corporation.
 -->
 
 <style>
+    td.grptd {
+    border: 0px !important;
+    background: #FAFAFA;
+    }
+
+    table.subtable {
+    width: auto;
+    float: left;
+    }
+
+    div.subdiv {
+    width: auto;
+    float: left;
+    }
 
     .cloudpassagehalo-report a:link {
     color: black;
@@ -106,8 +120,57 @@ of Phantom Cyber Corporation.
     content: "\25cf"; font-size: 10px;
     }
 
-</style>
+    .cloudpassagehalo-report .glyphicon {
+    font-size: 10px;
+    }
 
+    .cloudpassagehalo-report .collapse.in {
+    display: block !important;
+    }
+
+    .cloudpassagehalo-report .metadata_div .panel-default>.panel-heading {
+    background-image: none;
+    }
+
+    .cloudpassagehalo-report td.innerTableRow{
+    padding: 0px 20px;
+    background-color: #FAFAFA;
+    }
+
+    .cloudpassagehalo-report span.mainTitle{
+    font-size: 14px;
+    display: block;
+    }
+
+    .cloudpassagehalo-report a.subTitle{
+    font-size: 12px;
+    }
+
+    .cloudpassagehalo-report .panel-collapse{
+    padding: 10px 0px;
+    backgroud:transparent;
+    }
+
+    .cloudpassagehalo-report .details-control {
+    padding: 0px 5px !important;
+    text-align: center;
+    margin: 0px;
+    }
+
+    .cloudpassagehalo-report .details-control i {
+    display: block;
+    text-align: center;
+    }
+
+    .cloudpassagehalo-report a.nowrap {
+    white-space:nowrap;
+    }
+
+    .cloudpassagehalo-report table.subtable tr {
+    background: #FAFAFA;
+    }
+
+</style>
 <div class="cloudpassagehalo-report"
      style="overflow: auto; width: 100%; height: 100%; padding-left:10px; padding-right:10px">
     <!-- Main Div -->
@@ -120,7 +183,7 @@ of Phantom Cyber Corporation.
     <table class="wf-table-vertical">
         <tr>
             {% if result.param.package_name %}
-            <td>Package Name:</td>
+            <td>Package Name</td>
             <td><a href="javascript:;"
                    onclick="context_menu(this, [{'contains': ['cloudpassagehalo package name'], 'value': '{{result.param.package_name}}' }], 0, {{ container.id }}, null, false);">
                 {{result.param.package_name}}
@@ -128,8 +191,17 @@ of Phantom Cyber Corporation.
                 <span class="fa fa-caret-down" style="font-size: smaller;"></span>
             </a></td>
             {% endif %}
+            {% if result.param.process_name %}
+            <td>Process name</td>
+            <td><a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['process name'], 'value': '{{result.param.process_name}}' }], 0, {{ container.id }}, null, false);">
+                {{result.param.process_name}}
+                &nbsp;
+                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+            </a></td>
+            {% endif %}
             {% if result.param.username %}
-            <td>Username:</td>
+            <td>Username</td>
             <td><a href="javascript:;"
                    onclick="context_menu(this, [{'contains': ['user name'], 'value': '{{result.param.username}}' }], 0, {{ container.id }}, null, false);">
                 {{result.param.username}}
@@ -138,19 +210,10 @@ of Phantom Cyber Corporation.
             </a></td>
             {% endif %}
             {% if result.param.cve_number %}
-            <td>Common Vulnerability and Exposure number:</td>
+            <td>Common Vulnerability and Exposure number</td>
             <td><a href="javascript:;"
                    onclick="context_menu(this, [{'contains': ['cloudpassagehalo cve number'], 'value': '{{result.param.cve_number}}' }], 0, {{ container.id }}, null, false);">
                 {{result.param.cve_number}}
-                &nbsp;
-                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-            </a></td>
-            {% endif %}
-            {% if result.param.process_name %}
-            <td>Process name:</td>
-            <td><a href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['process name'], 'value': '{{result.param.process_name}}' }], 0, {{ container.id }}, null, false);">
-                {{result.param.process_name}}
                 &nbsp;
                 <span class="fa fa-caret-down" style="font-size: smaller;"></span>
             </a></td>
@@ -159,21 +222,12 @@ of Phantom Cyber Corporation.
     </table>
     <h3 class="wf-h3-style">Server Information</h3>
     <!--Server Information-->
-    <table class="wf-table-horizontal datatable">
+    <table id="servers" class="wf-table-horizontal datatable">
         <thead>
         <tr>
+            <th></th>
             <th>OS Type</th>
             <th>Server</th>
-            {% if result.param.username %}
-            <th>Last Login</th>
-            <th>Comment</th>
-            <th>Shell</th>
-            <th>GID</th>
-            <th>UID</th>
-            <th>Admin Privilege</th>
-            <th>Locked</th>
-            <th>SID</th>
-            {% endif %}
             <th>Server Label</th>
             <th>Agent Id</th>
             <th>Group Name</th>
@@ -207,326 +261,600 @@ of Phantom Cyber Corporation.
             <th>Self-verification Failed</th>
         </tr>
         </thead>
-        <tbody>
-        {% for curr_data in result.data %}
-        <tr>
-            <td>
-                {% if curr_data.os_type %}
-                {{curr_data.os_type}}
-                {% endif %}
-            </td>
-            <td><a href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['host name'], 'value': '{{curr_data.hostname}}' }], 0, {{ container.id }}, null, false);">
-                {{curr_data.hostname}}
-                &nbsp;
-                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-            </a></td>
-            {% if result.param.username %}
-            <td>
-                {% if curr_data.last_login_at %}
-                {{curr_data.last_login_at}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.comment %}
-                {{curr_data.comment}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.shell %}
-                {{curr_data.shell}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.gid %}
-                {{curr_data.gid}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.uid %}
-                {{curr_data.uid}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            {% if curr_data.admin%}
-            <td style="color:red">{{"Yes"}}</td>
-            {% else %}
-            <td>{{"No"}}</td>
-            {% endif %}
-            <td>
-                {% if curr_data.locked %}
-                {{"Yes"}}
-                {% else %}
-                {{"No"}}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.sid %}
-                {{curr_data.sid}}
-                {% else %}
-                {{"-"}}
-                {% endif %}
-            </td>
-            {% endif %}
-            <td>
-                {% if curr_data.server_label %}
-                {{curr_data.server_label}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.id %}
-                {{curr_data.id}}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.group_name %}
-                {{curr_data.group_name}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.platform_version %}
-                {{curr_data.platform_version}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.state %}
-                {{curr_data.state}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.daemon_version %}
-                {{curr_data.daemon_version}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.connecting_ip_address %}
-                <a href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{curr_data.connecting_ip_address}}' }], 0, {{ container.id }}, null, false);">
-                    {{curr_data.connecting_ip_address}}
-                    &nbsp;
-                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                </a>
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.connecting_ip_fqdn %}
-                {{curr_data.connecting_ip_fqdn}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.aws_ec2.ec2_instance_id %}
-                <a href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['cloudpassagehalo aws instance id'], 'value': '{{curr_data.aws_ec2.ec2_instance_id}}' }], 0, {{ container.id }}, null, false);">
-                    {{curr_data.aws_ec2.ec2_instance_id}}
-                    &nbsp;
-                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                </a>
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.aws_ec2.ec2_account_id %}
-                {{curr_data.aws_ec2.ec2_account_id}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.aws_ec2.ec2_kernel_id %}
-                {{curr_data.aws_ec2.ec2_kernel_id}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.aws_ec2.ec2_image_id %}
-                {{curr_data.aws_ec2.ec2_image_id}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.aws_ec2.ec2_availability_zone %}
-                {{curr_data.aws_ec2.ec2_availability_zone}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.aws_ec2.ec2_region %}
-                {{curr_data.aws_ec2.ec2_region}}
-                {% else %}
-                {{ "-" }}{% endif %}
-            </td>
-            <td>
-                {% if curr_data.aws_ec2.ec2_private_ip %}
-                <a href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{curr_data.aws_ec2.ec2_private_ip}}' }], 0, {{ container.id }}, null, false);">
-                    {{curr_data.aws_ec2.ec2_private_ip}}
-                    &nbsp;
-                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                </a>
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.aws_ec2.ec2_instance_type %}
-                {{curr_data.aws_ec2.ec2_instance_type}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.aws_ec2.ec2_security_groups %}
-                {% for sec_grp in curr_data.aws_ec2.ec2_security_groups %}
-                <!-- loop for each result.data.aws_ec2.ec2_security_groups -->
-                <span class="glyphicon glyphicon-dot"></span>&nbsp;{{sec_grp}}
-                {% if not forloop.last %}<br/> {% endif %}
-                {% endfor %}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            {% if curr_data.firewall_policy %}
-            <td>
-                {% if curr_data.firewall_policy.name %}
-                {{curr_data.firewall_policy.name}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.firewall_policy.status %}
-                {{curr_data.firewall_policy.status}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>{{ "Ok" }}</td>
-            {% else %}
-            <td>{{"-"}}</td>
-            <td>{{"-"}}</td>
-            <td>{{ "No Firewall Policy is assigned to the server" }}</td>
-            {% endif %}
-            <td>
-                {% if curr_data.group_id %}
-                {{curr_data.group_id}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td><a href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['host name'], 'value': '{{curr_data.hostname}}' }], 0, {{ container.id }}, null, false);">
-                {{curr_data.hostname}}
-                &nbsp;
-                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-            </a>
-            </td>
-            <td>
-                {% if curr_data.os_version %}
-                {{curr_data.os_version}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.kernel_version %}
-                {{curr_data.kernel_version}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.last_state_change %}
-                {{curr_data.last_state_change}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.kernel_machine %}
-                {{curr_data.kernel_machine}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.platform %}
-                {{curr_data.platform}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {% if curr_data.primary_ip_address %}
-                <a href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{curr_data.primary_ip_address}}' }], 0, {{ container.id }}, null, false);">
-                    {{curr_data.primary_ip_address}}
-                    &nbsp;
-                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                </a>
-                {% endif %}
-            </td>
-            <td>
-                {{curr_data.read_only}}
-            </td>
-            <td>
-                {% if curr_data.reported_fqdn %}
-                {{curr_data.reported_fqdn}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
-            </td>
-            <td>
-                {{curr_data.self_verification_failed}}
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
     </table>
+    <script>
+        $.extend(true, $.fn.dataTable.defaults, {
+            "bLengthChange": false,
+            "language": {
+                "paginate": {
+                    "previous": "<i class='fa fa-angle-left fa-lg'></i>",
+                    "next": "<i class='fa fa-angle-right fa-lg'></i>"
+                }
+            },
+            "dom": '<"top"f>rt<"bottom"ip><"clear">',
+            drawCallback: function(settings) {
+                var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+                pagination.toggle(this.api().page.info().pages > 1);
+            }
+        });
+        var l = JSON.stringify(eval({{result.data|safe}}));
+        $('#servers').DataTable({
+        "data": JSON.parse(l),
+        "columns": [
+            {
+                "className":      'details-control',
+                "orderable":      false,
+                "data":           null,
+                "defaultContent": '<i class="glyphicon glyphicon-plus" ></i>'
+            },
+            { "data": "os_type" },
+            { "data": "hostname",
+              "render": function ( hostname, type, full, meta ) {
+                    return '<a href="javascript:;" class="nowrap"'+
+                            ' onclick="context_menu(this, [{\'contains\': [\'host name\'], \'value\': \''+hostname+'\' }], 0, {{ container.id }}, null, false);">' +
+                            hostname + '&nbsp; <span class="fa fa-caret-down" style="font-size: smaller;"></span></a>'
+              }
+            },
+            { "data": "server_label",
+                "render": function (server_label, type, full, meta ) {
+                    return getColValue(server_label, false);
+                }
+            },
+            { "data": "id" },
+            { "data": "group_name" },
+            { "data": "platform_version" },
+            { "data": "state" },
+            { "data": "daemon_version" },
+            { "data": "connecting_ip_address" ,
+                "render": function ( connecting_ip_address, type, full, meta ) {
+                    connecting_ip_address = getColValue(connecting_ip_address, true);
+                    if (connecting_ip_address != "-"){
+                        return '<a href="javascript:;" class="nowrap"'+
+                            ' onclick="context_menu(this, [{\'contains\': [\'ip\'], \'value\': \''+connecting_ip_address+'\' }], 0, {{ container.id }}, null, false);">' +
+                            connecting_ip_address + '&nbsp; <span class="fa fa-caret-down" style="font-size: smaller;"></span></a>';
+                    }
+                    return displayDash();
+              }
+            },
+            { "data": "connecting_ip_fqdn",
+                "render": function (connecting_ip_fqdn, type, full, meta ) {
+                    return getColValue(connecting_ip_fqdn, false);
+                }
+            },
+            { "data": "aws_ec2",
+                "render": function ( aws_ec2, type, full, meta ) {
+                    instance_id = getInnerColValue(aws_ec2, 'ec2_instance_id', true);
+                    if (instance_id != "-") {
+                        return '<a href="javascript:;" class="nowrap"'+
+                            ' onclick="context_menu(this, [{\'contains\': [\'cloudpassagehalo aws instance id\'], \'value\': \''+instance_id+'\' }], 0, {{ container.id }}, null, false);">' +
+                            instance_id + '&nbsp; <span class="fa fa-caret-down" style="font-size: smaller;"></span></a>';
+                    }
+                    return displayDash()
+              }
+            },
+            { "data": "aws_ec2",
+                "render": function ( aws_ec2, type, full, meta ) {
+                    return getInnerColValue(aws_ec2, 'ec2_account_id', false);
+              }
+            },
+            { "data": "aws_ec2",
+                "render": function ( aws_ec2, type, full, meta ) {
+                    return getInnerColValue(aws_ec2, 'ec2_kernel_id', false);
+              }
+            },
+            { "data": "aws_ec2",
+                "render": function ( aws_ec2, type, full, meta ) {
+                    return getInnerColValue(aws_ec2, 'ec2_image_id', false);
+              }
+            },
+            { "data": "aws_ec2",
+                "render": function ( aws_ec2, type, full, meta ) {
+                    return getInnerColValue(aws_ec2, 'ec2_availability_zone', false);
+              }
+            },
+            { "data": "aws_ec2",
+                "render": function ( aws_ec2, type, full, meta ) {
+                    return getInnerColValue(aws_ec2, 'ec2_region', false);
+              }
+            },
+            { "data": "aws_ec2",
+                "render": function ( aws_ec2, type, full, meta ) {
+                    private_ip = getInnerColValue(aws_ec2, 'ec2_private_ip', true);
+                    if (private_ip != "-") {
+                        return '<a href="javascript:;" class="nowrap"'+
+                            ' onclick="context_menu(this, [{\'contains\': [\'ip\'], \'value\': \''+private_ip+'\' }], 0, {{ container.id }}, null, false);">' +
+                            private_ip + '&nbsp; <span class="fa fa-caret-down" style="font-size: smaller;"></span></a>';
+                    }
+                    return private_ip
+              }
+            },
+            { "data": "aws_ec2",
+                "render": function ( aws_ec2, type, full, meta ) {
+                    return getInnerColValue(aws_ec2, 'ec2_instance_type', false);
+              }
+            },
+            { "data": "aws_ec2",
+                "render": function ( aws_ec2, type, full, meta ) {
+                    return getInnerColValue(aws_ec2, 'ec2_security_groups', false);
+              }
+            },
+            { "data": "firewall_policy",
+                "render": function ( firewall_policy, type, full, meta ) {
+                    return getInnerColValue(firewall_policy, 'name', false);
+              }
+            },
+            { "data": "firewall_policy",
+                "render": function ( firewall_policy, type, full, meta ) {
+                    return getInnerColValue(firewall_policy, 'status', false);
+              }
+            },
+            { "data": "firewall_policy",
+                "render": function ( firewall_policy, type, full, meta ) {
+                    if (firewall_policy != undefined){
+                        return "Ok"
+                    }
+                    return "No Firewall Policy is assigned to the server"
+              }
+            },
+            { "data": "group_id",
+                "render": function ( group_id, type, full, meta ) {
+                    return getColValue(group_id, false);
+                }
+            },
+            { "data": "hostname",
+                "render": function ( hostname, type, full, meta ) {
+                    return '<a href="javascript:;" class="nowrap"'+
+                            ' onclick="context_menu(this, [{\'contains\': [\'host name\'], \'value\': \''+hostname+'\' }], 0, {{ container.id }}, null, false);">' +
+                            hostname + '&nbsp; <span class="fa fa-caret-down" style="font-size: smaller;"></span></a>'
+              }
+            },
+            { "data": "os_version",
+                "render": function ( os_version, type, full, meta ) {
+                    return getColValue(os_version, false);
+                }
+            },
+            { "data": "kernel_version",
+                "render": function ( kernel_version, type, full, meta ) {
+                    return getColValue(kernel_version, false);
+                }
+            },
+            { "data": "last_state_change",
+                "render": function ( last_state_change, type, full, meta ) {
+                    return getColValue(last_state_change, false);
+                }
+            },
+            { "data": "kernel_machine",
+                "render": function ( kernel_machine, type, full, meta ) {
+                    return getColValue(kernel_machine, false);
+                }
+            },
+            { "data": "platform",
+                "render": function ( platform, type, full, meta ) {
+                    return getColValue(platform, false);
+                }
+            },
+            { "data": "primary_ip_address",
+                "render": function ( primary_ip_address, type, full, meta ) {
+                    return '<a href="javascript:;" class="nowrap"'+
+                            ' onclick="context_menu(this, [{\'contains\': [\'ip\'], \'value\': \''+primary_ip_address+'\' }], 0, {{ container.id }}, null, false);">' +
+                            primary_ip_address + '&nbsp; <span class="fa fa-caret-down" style="font-size: smaller;"></span></a>'
+              }
+            },
+            { "data": "read_only" },
+            { "data": "reported_fqdn",
+                render: function ( reported_fqdn, type, full, meta ) {
+                    return getColValue(reported_fqdn, false);
+              }
+            },
+            { "data": "self_verification_failed" }
+        ],
+        "order": [[1, "asc"]]
+        });
+    function getColValue(col, isContains)
+    {
+        if(col != undefined){
+            return col;
+        }
+        if(isContains){
+            return "-";
+        }
+        return displayDash();
+    }
+    function getInnerColValue(col, innerCol, isContains)
+    {
+        if(col != undefined && col[innerCol] != undefined){
+            return col[innerCol];
+        }
+        if(isContains){
+            return "-";
+        }
+        return displayDash();
+    }
+    function displayDash()
+    {
+        return '<div class="center">-</div>';
+    }
+
+    $(document).ready(function() {
+    var table = $('#servers').DataTable();
+
+    // Add event listener for opening and closing details
+    $('#servers tbody').on('click', 'td.details-control', function () {
+        $(this).find('i').toggleClass('glyphicon-minus glyphicon-plus');
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            {% if result.param.package_name %}
+                row.child(format_package(row.data()), "innerTableRow").show();
+            {% endif %}
+            {% if result.param.process_name %}
+                row.child(format_process(row.data()), "innerTableRow").show();
+            {% endif %}
+            {% if result.param.cve_number %}
+                row.child(format_vulnerability(row.data()), "innerTableRow").show();
+            {% endif %}
+            {% if result.param.username %}
+                row.child(format_user(row.data()), "innerTableRow").show();
+            {% endif %}
+            tr.addClass('shown');
+            $('.subtable').DataTable();
+            }
+        } );
+
+    } );
+    </script>
     {% endif %}
     {% endfor %}
 </div>
 <script>
-    $.extend(true, $.fn.dataTable.defaults, {
-        "bLengthChange": false,
-        "language": {
-            "paginate": {
-                "previous": "<i class='fa fa-angle-left fa-lg'></i>",
-                "next": "<i class='fa fa-angle-right fa-lg'></i>"
+
+
+    table_start = '<div class="subdiv"><table class="wf-table-horizontal datatable subtable">';
+    table_end = '</table></div>'
+    thead_start = '<thead>';
+    thead_end = '</thead>';
+    tbody_start = '<tbody>';
+    tbody_end = '</tbody>';
+
+    function format_package(d){
+        package_list = d.packages
+        records = ""
+        for(var i=0;i<package_list.length;i++)
+        {
+            tr_start = '<tr>';
+            td_package_name =  '<td><a href="javascript:;"'+
+                               'onclick="context_menu(this, [{\'contains\': [\'cloudpassagehalo package name\'], \'value\': \''+package_list[i].package_name+'\' }], 0, {{ container.id }}, null, false);">'+
+                            package_list[i].package_name+ '&nbsp;<span class="fa fa-caret-down" style="font-size: smaller;"></span>'+
+                            '</a></td>';
+            td_package_version = '<td>' + getColValue(package_list[i].package_version, false) + '</td>';
+            td_package_vendor = "";
+            td_package_install_date = "";
+            if(d.packages && d.packages[0]['vendor'] != undefined){
+                td_package_vendor = '<td>' + getColValue(package_list[i].vendor, false) + '</td>';
+                td_package_install_date = '<td>' + getColValue(package_list[i].install_date, false) + '</td>';
             }
-        },
-        "dom": '<"top"f>rt<"bottom"ip><"clear">',
-        drawCallback: function(settings) {
-            var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
-            pagination.toggle(this.api().page.info().pages > 1);
+            td_package_status = '<td>' + getColValue(package_list[i].status, false) + '</td>';
+            td_package_critical = '<td>' + getColValue(package_list[i].critical, false) + '</td>';
+            tr_end = '</tr>';
+            records = records + tr_start + td_package_name + td_package_version + td_package_vendor + td_package_install_date + td_package_status + td_package_critical + tr_end;
         }
-    });
-    $('.datatable').DataTable();
+
+        table_header = '<tr><th>Package</th><th>Version</th>';
+        if(d.packages && d.packages[0]['vendor'] != undefined){
+            table_header = table_header + '<th>Publisher</th><th>Install Date</th>';
+        }
+        table_header = table_header + '<th>Status</th><th>Critical</th></tr>';
+        return table_start + thead_start + table_header + thead_end + tbody_start + records + tbody_end + table_end;
+    }
+
+    function format_process(d){
+        process_list = d.processes
+        records = ""
+        for(var i=0;i<process_list.length;i++)
+        {
+            tr_start = '<tr>';
+            td_process_id =  '<td><a href="javascript:;"'+
+                               'onclick="context_menu(this, [{\'contains\': [\'pid\'], \'value\': \''+process_list[i].pid+'\' }], 0, {{ container.id }}, null, false);">'+
+                            process_list[i].pid+ '&nbsp;<span class="fa fa-caret-down" style="font-size: smaller;"></span>'+
+                            '</a></td>';
+            td_process_name =  '<td><a href="javascript:;"'+
+                               'onclick="context_menu(this, [{\'contains\': [\'process name\'], \'value\': \''+process_list[i].process_name+'\' }], 0, {{ container.id }}, null, false);">'+
+                            process_list[i].process_name+ '&nbsp;<span class="fa fa-caret-down" style="font-size: smaller;"></span>'+
+                            '</a></td>';
+            td_command = '<td>' + getColValue(process_list[i].command, false) + '</td>';
+            td_user = '<td>' + getColValue(process_list[i].user, false) + '</td>';
+            td_cpu = "";
+            if(process_list[i]['cpu_usage'] != undefined){
+                td_cpu = getColValue(process_list[i].cpu_usage, false);
+            }
+            else {
+                td_cpu = getColValue(process_list[i].cpu_percent, false);
+            }
+            td_cpu = '<td>' +  td_cpu + '</td>';
+            tr_end = '</tr>';
+            records = records + tr_start + td_process_id + td_process_name + td_command + td_user + td_cpu + tr_end;
+        }
+        table_header = '<tr><th>Process ID</th><th>Process Name</th><th>Command</th><th>Username</th><th>CPU %</th></tr>';
+        return table_start + thead_start + table_header + thead_end + tbody_start + records + tbody_end + table_end;
+    }
+
+    function format_vulnerability(d){
+        vul_list = d.scan.findings;
+        records = "";
+        summary_table = "";
+        for(var i=0;i<vul_list.length;i++)
+        {
+            td_ok_finding = '<tr><td>Ok packages count:</td><td>' + d.scan.ok_findings_count + '</td></tr>';
+            td_critical_findings = '<tr><td>Critical packages count:</td><td>' + d.scan.critical_findings_count + '</td></tr>';
+            td_non_critical_findings = '<tr><td>Non critical packages count:</td><td>' + d.scan.non_critical_findings_count + '</td></tr>';
+            summary_table = '<br/><table class="wf-table-vertical">' + td_ok_finding + td_critical_findings +td_non_critical_findings + '</table><br/>';
+            tr_start = '<tr>';
+            td_icon = '<td>';
+            if (vul_list[i].critical && vul_list[i].status == "Vulnerable") {
+                td_icon = td_icon + '<i class="glyphicon glyphicon-exclamation-sign severity-icon" style="color:rgb(200,15,15);"></i>';
+            }
+            else if(!vul_list[i].critical && vul_list[i].status == "Vulnerable"){
+                td_icon = td_icon + '<i class="glyphicon glyphicon-exclamation-sign severity-icon" style="color:rgb(232,154,32);"></i>';
+            }
+
+            td_icon = td_icon + '</td>';
+            td_package_name =  '<td><a href="javascript:;"'+
+                               'onclick="context_menu(this, [{\'contains\': [\'cloudpassagehalo package name\'], \'value\': \''+vul_list[i].package_name+'\' }], 0, {{ container.id }}, null, false);">'+
+                            vul_list[i].package_name+ '&nbsp;<span class="fa fa-caret-down" style="font-size: smaller;"></span>'+
+                            '</a></td>';
+            td_package_version = '<td>' + getColValue(vul_list[i].package_version, false) + '</td>';
+            td_package_vendor = "";
+            td_package_install_date = "";
+            if(d.scan.findings && d.scan.findings[0]['vendor'] != undefined){
+                td_package_vendor = '<td>' + getColValue(vul_list[i].vendor, false) + '</td>';
+                td_package_install_date = '<td>' + getColValue(vul_list[i].install_date, false) + '</td>';
+            }
+            td_package_status = '<td>' + getColValue(vul_list[i].status, false) + '</td>';
+            td_cve_number = "<td>";
+            for(var j=0;j<vul_list[i].cve_entries.length;j++)
+            {
+                td_cve_number = td_cve_number + '<a href="javascript:;"' +
+                                ' onclick="context_menu(this, [{\'contains\': [\'cloudpassagehalo cve number\'], \'value\': \''+ vul_list[i].cve_entries[j].cve_entry +'\' }], 0, {{ container.id }}, null, false);">' +
+                                vul_list[i].cve_entries[j].cve_entry + '&nbsp;<span class="fa fa-caret-down" style="font-size: smaller;"></span></a>'
+
+            }
+            td_cve_number = td_cve_number + "</td>";
+            tr_end = '</tr>';
+            records = records + tr_start + td_icon +td_package_name + td_package_version + td_package_vendor + td_package_install_date + td_package_status + td_cve_number + tr_end;
+        }
+        table_header = '<tr><th></th><th>Package</th><th>Version</th>';
+        if(d.scan.findings && d.scan.findings[0]['vendor'] != undefined){
+            table_header = table_header + '<th>Publisher</th><th>Install Date</th>';
+        }
+        table_header = table_header + '<th>Status</th><th>CVE Reference</th></tr>';
+        return summary_table + table_start + thead_start + table_header + thead_end + tbody_start + records + tbody_end + table_end;
+    }
+
+    function format_user ( d ) {
+        grp_value = "", local_user_info="", ssh_info="", pwd_info="", user_info="";
+        grp_arr = d.account.groups.split(",")
+        for(i=0;i<grp_arr.length;i++)
+        {
+           grp_value = grp_value +  '<li>' + grp_arr[i] + '</li>'
+        }
+
+        account_username = '<tr><td>User Name:</td>' +
+                           '<td><a href="javascript:;" onclick="context_menu(this, [{\'contains\': [\'user name\'], \'value\': \'' + d.account.username + '\' }], 0, {{ container.id }}, null, false);">'+
+                                d.account.username + ' &nbsp; ' +
+                                '<span class="fa fa-caret-down" style="font-size: smaller;"></span>' +
+                                '</a></td>'+
+                            '</tr>'
+        account_full_name = "";
+        account_full_name_td = '<td>';
+        if (d.account.full_name) {
+            account_full_name_td = account_full_name_td + d.account.full_name;
+        }
+        account_full_name_td = account_full_name_td +'</td>';
+        if(d.os_type == "Windows") {
+            account_full_name = '<tr>' + '<td>Full Name:</td>' + account_full_name_td + '</tr>';
+        }
+
+        account_admin = "";
+        if (d.account.admin){
+            if(d.account.admin == "Yes"){
+                account_admin_td = '<td style="color:red">'+d.account.admin+'</td>'
+            }
+            else {
+                account_admin_td = '<td>'+d.account.admin+'</td>'
+            }
+            account_admin = '<tr>' +
+                                '<td>Admin:</td>' + account_admin_td + '</tr>'
+        }
+        account_active = '<tr><td>Active:</td><td>' + d.account.active + '</td></tr>'
+        account_locked = ""
+        if (d.account.locked) {
+            account_locked = '<tr><td>Locked:</td><td>' + d.account.locked + '</td></tr>'
+        }
+        account_last_login_at = ""
+        if (d.account.last_login_at) {
+            account_last_login_at = '<tr><td>Last Login:</td><td>' + d.account.last_login_at + '</td></tr>'
+        }
+        account_last_login_from = ""
+        if (d.account.last_login_from) {
+            account_last_login_from = '<tr><td>Last Login From:</td><td>' + d.account.last_login_from + '</td></tr>'
+        }
+        account_expires = ""
+        if (d.account.expires) {
+            account_expires = '<tr><td>Expires:</td><td>' + d.account.expires + '</td></tr>'
+        }
+        account_home = ""
+        if (d.account.home) {
+            account_home = '<tr><td>Home:</td><td>' + d.account.home + '</td></tr>'
+        }
+        account_sid = ""
+        if (d.account.sid) {
+            account_sid = '<tr><td>SID:</td><td>' + d.account.sid + '</td></tr>'
+        }
+        account_gid = ""
+        if (d.account.gid) {
+            account_gid = '<tr><td>GID:</td><td>' + d.account.gid + '</td></tr>'
+        }
+        account_uid = ""
+        if (d.account.uid) {
+            account_uid = '<tr><td>UID:</td><td>' + d.account.uid + '</td></tr>'
+        }
+        account_sudo_access = ""
+        if (d.account.sudo_access) {
+            account_sudo_access = '<tr><td>Sudo Access:</td><td>' + d.account.sudo_access + '</td></tr>'
+        }
+        account_shell = ""
+        if (d.account.shell) {
+            account_shell = '<tr><td>Shell:</td><td>' + d.account.shell + '</td></tr>'
+        }
+        account_comment = ""
+        if (d.account.comment) {
+            account_comment = '<tr><td>Comment:</td><td>' + d.account.comment + '</td></tr>'
+        }
+        user_info = '<div id="account-information-table" class="panel-collapse collapse in">' +
+                        '<table class="wf-table-vertical">' +
+                    account_username + account_full_name + account_admin + account_active + account_locked +
+                    account_last_login_at + account_last_login_from + account_expires + account_home + account_sid +
+                    account_gid + account_uid + account_sudo_access + account_shell + account_comment +
+                    '</table></div>'
+        pwd_account_password_required = ""
+        if(d.account.password_required) {
+            pwd_account_password_required = '<tr>' +
+                    '<td>Password Required:</td>' +
+                    '<td>' + d.account.password_required+ '</td>' +
+                '</tr>'
+        }
+        pwd_account_password_changeable = ""
+        if(d.account.password_changeable) {
+            pwd_account_password_changeable = '<tr>' +
+                    '<td>User Can Change Password:</td>' +
+                    '<td>' + d.account.password_changeable + '</td>' +
+                '</tr>'
+        }
+        pwd_account_last_password_change = ""
+        if(d.account.last_password_change) {
+            pwd_account_last_password_change = '<tr>' +
+                    '<td>Password Last Changed:</td>' +
+                    '<td>' + d.account.last_password_change+ '</td>' +
+                '</tr>'
+        }
+        pwd_account_password_expires = ""
+        if(d.account.password_expires) {
+            pwd_account_password_expires = '<tr>' +
+                    '<td>Password Expires:</td>' +
+                    '<td>' + d.account.password_expires+ '</td>' +
+                '</tr>'
+        }
+        pwd_account_password_expired = ""
+        if(d.account.password_expired) {
+            pwd_account_password_expired = '<tr>' +
+                    '<td>Password Expired:</td>' +
+                    '<td>' + d.account.password_expired + '</td>' +
+                '</tr>'
+        }
+        pwd_account_minimum_days_between_password_changes = ""
+        if(d.account.minimum_days_between_password_changes || d.account.minimum_days_between_password_changes == 0) {
+            pwd_account_minimum_days_between_password_changes = '<tr>' +
+                    '<td>Minimum Days Between Password Changes:</td>' +
+                    '<td>' + d.account.minimum_days_between_password_changes+ '</td>' +
+                '</tr>'
+        }
+        pwd_account_maximum_days_between_password_changes = ""
+        if(d.account.maximum_days_between_password_changes || d.account.maximum_days_between_password_changes == 0) {
+            pwd_account_maximum_days_between_password_changes = '<tr>' +
+                    '<td>Maximum Days Between Password Changes:</td>' +
+                    '<td>' + d.account.maximum_days_between_password_changes+ '</td>' +
+                '</tr>'
+        }
+        pwd_account_days_warn_before_password_expiration = ""
+        if(d.account.days_warn_before_password_expiration || d.account.days_warn_before_password_expiration == 0 ) {
+            pwd_account_days_warn_before_password_expiration = '<tr>' +
+                    '<td>Days Warn Before Password Expiration:</td>' +
+                    '<td>' + d.account.days_warn_before_password_expiration+ '</td>' +
+                '</tr>'
+        }
+        pwd_account_disabled_after_days_inactive = ""
+        if(d.account.disabled_after_days_inactive || d.account.disabled_after_days_inactive == 0) {
+            pwd_account_disabled_after_days_inactive = '<tr>' +
+                    '<td>Disabled After Days Inactive:</td>' +
+                    '<td>' + d.account.disabled_after_days_inactive+ '</td>' +
+                '</tr>'
+        }
+        pwd_account_days_since_disabled = ""
+        if(d.account.days_since_disabled || d.account.days_since_disabled == 0 ) {
+            pwd_account_days_since_disabled = '<tr>' +
+                    '<td>Days Since Disabled:</td>' +
+                    '<td>' + d.account.days_since_disabled+ '</td>' +
+                '</tr>'
+        }
+        pwd_info = '<div id="password-information-table" class="panel-collapse collapse in">' +
+                        '<table class="wf-table-vertical">' +
+                    pwd_account_password_required +
+                    pwd_account_password_changeable +
+                    pwd_account_last_password_change +
+                    pwd_account_password_expires +
+                    pwd_account_password_expired +
+                    pwd_account_minimum_days_between_password_changes +
+                    pwd_account_maximum_days_between_password_changes +
+                    pwd_account_days_warn_before_password_expiration +
+                    pwd_account_disabled_after_days_inactive +
+                    pwd_account_days_since_disabled + '</table></div>'
+        ssh_title = "", ssh_info = "";
+        if (d.account.ssh_acl)
+        {
+            ssh_title = '<div >' +
+                        '<h2 class="panel-title">' +
+                            '<a data-toggle="collapse" data-parent="user-information"' +
+                               'href="#ssh-information-table" class="subTitle">SSH INFO:</a>' +
+                        '</h2>' +
+                     '</div>'
+            ssh_comment_info = "";
+            if (d.account.ssh_authorized_keys && d.account.ssh_authorized_keys[0].comment && d.account.ssh_authorized_keys[0].comment != "None")
+            {
+                ssh_comment_info ='<tr>' +
+                                    '<td>Ssh Authorized Keys:</td>' +
+                                    '<td>' + d.account.ssh_authorized_keys[0].comment +'</td>' +
+                                    '</tr>'
+            }
+            ssh_info = '<div id="ssh-information-table" class="panel-collapse collapse in">' +
+                                    '<table class="wf-table-vertical">' +
+                                    '<tr><td>Ssh Acl:</td><td>'+d.account.ssh_acl+'</td></tr>' + ssh_comment_info +
+                                    '</table></div>'
+        }
+
+        local_user_info = '<div id="group-information-table" class="panel-collapse collapse in">' +
+                             '<table>' +
+                            '<tr><td class="grptd"><ul>' + grp_value + '</ul></td></tr>' +
+                        '</table></div>'
+        main_title ='<span class="mainTitle">Local User Account Details</span><br/>'
+        username = '<h4>' + d.account.username +'</h4>'
+        acc_title = '<div>' +
+                      '<h2 class="panel-title">' +
+                        '<a data-toggle="collapse" data-parent="user-information" href="#account-information-table" class="subTitle">ACCOUNT INFO:</a>' +
+                      '</h2>' +
+                      '</div>'
+        pwd_title = '<div>' +
+                            '<h2 class="panel-title">' +
+                                '<a data-toggle="collapse" data-parent="user-information"' +
+                                   'href="#password-information-table" class="subTitle">PASSWORD DETAILS:</a>' +
+                            '</h2>' +
+                        '</div>'
+        local_user_title = '<div>' +
+                                '<h2 class="panel-title">' +
+                                    '<a data-toggle="collapse" data-parent="user-information"' +
+                                       'href="#group-information-table" class="subTitle">LOCAL GROUP MEMBERSHIP:</a>' +
+                                '</h2>' +
+                            '</div>'
+
+        page_content = main_title + '<div class="panel-group" id="user-information">'  + acc_title +  user_info + pwd_title + pwd_info + local_user_title + local_user_info +
+        ssh_title + ssh_info + '</div>'
+        return page_content;
+    }
+
 </script>
 {% endblock %} <!-- Main Start Block -->

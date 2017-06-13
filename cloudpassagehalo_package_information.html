@@ -111,7 +111,7 @@ of Phantom Cyber Corporation.
     <table class="wf-table-vertical">
         {% if result.param.aws_instance_id %}
         <tr>
-            <td>Aws instance ID: </td>
+            <td>Aws instance ID</td>
             <td><a href="javascript:;"
                    onclick="context_menu(this, [{'contains': ['cloudpassagehalo aws instance id'], 'value': '{{result.param.aws_instance_id}}' }], 0, {{ container.id }}, null, false);">
                 {{result.param.aws_instance_id}}
@@ -122,7 +122,7 @@ of Phantom Cyber Corporation.
         {% endif %}
         {% if result.param.ip %}
         <tr>
-            <td>IP: </td>
+            <td>IP</td>
             <td><a href="javascript:;"
                    onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{result.param.ip}}' }], 0, {{ container.id }}, null, false);">
                 {{result.param.ip}}
@@ -133,21 +133,10 @@ of Phantom Cyber Corporation.
         {% endif %}
         {% if result.param.hostname %}
         <tr>
-            <td>Hostname: </td>
+            <td>Hostname</td>
             <td><a href="javascript:;"
                    onclick="context_menu(this, [{'contains': ['host name'], 'value': '{{result.param.hostname}}' }], 0, {{ container.id }}, null, false);">
                 {{result.param.hostname}}
-                &nbsp;
-                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-            </a></td>
-        </tr>
-        {% endif %}
-        {% if result.param.package_name %}
-        <tr>
-            <td>Package Name: </td>
-            <td><a href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['cloudpassagehalo package name'], 'value': '{{result.param.package_name}}' }], 0, {{ container.id }}, null, false);">
-                {{result.param.package_name}}
                 &nbsp;
                 <span class="fa fa-caret-down" style="font-size: smaller;"></span>
             </a></td>
@@ -159,11 +148,11 @@ of Phantom Cyber Corporation.
     <table class="wf-table-horizontal datatable">
         <thead>
         <tr>
-            <th>Package Name</th>
-            <th>Package Version</th>
+            <th>Package</th>
+            <th>Version</th>
             {% if result.data.0.vendor %}
-            <th>Vendor</th>
-            <th>Installed Date</th>
+            <th>Publisher</th>
+            <th>Install Date</th>
             {% endif %}
             <th>Status</th>
             <th>Critical</th>
@@ -179,26 +168,14 @@ of Phantom Cyber Corporation.
                 <span class="fa fa-caret-down" style="font-size: smaller;"></span>
             </a></td>
             <td>
-                {% if curr_data.package_version %}
-                {{curr_data.package_version}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
+                {{curr_data.package_version|default:'<div class="center">-</div>'}}
             </td>
             {% if result.data.0.vendor %}
             <td>
-                {% if curr_data.vendor %}
-                {{curr_data.vendor}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
+                {{curr_data.vendor|default:'<div class="center">-</div>'}}
             </td>
             <td>
-                {% if curr_data.install_date %}
-                {{curr_data.install_date}}
-                {% else %}
-                {{ "-" }}
-                {% endif %}
+                {{curr_data.install_date|default:'<div class="center">-</div>'}}
             </td>
             {% endif %}
             <td>{{curr_data.status}}</td>
