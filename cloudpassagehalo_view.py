@@ -13,16 +13,12 @@
 # --
 import time
 import string
-import json
 
 
 # Function override response
 def _parsed_data(response, provides):
 
-    if provides == "list vulnerabilities":
-        _parse_finding_data(response)
-
-    if provides == "get vulnerability":
+    if provides in ["get vulnerability", "list vulnerabilities"]:
         for server in response:
             _parse_finding_data(server)
 
@@ -37,7 +33,7 @@ def _parsed_data(response, provides):
                 except ValueError:
                     pass
 
-    if provides in ["get package", "get vulnerability", "get process"]:
+    if provides in ["list servers"]:
         for server in response:
             if server["kernel_name"].lower() == "linux":
                 server["os_type"] = string.capwords(server["kernel_name"])
@@ -228,24 +224,6 @@ def _get_time_label(value, isago):
 # Function that change custom response for user
 def parse_user_response(response):
     for curr_res in response:
-        if curr_res["kernel_name"].lower() == "linux":
-            curr_res["os_type"] = string.capwords(curr_res["kernel_name"])
-        else:
-            curr_res["os_type"] = string.capwords(curr_res["platform"])
-
-        curr_res["platform"] = string.capwords(curr_res["platform"])
-        curr_res["state"] = string.capwords(curr_res["state"])
-        version_arr = curr_res["os_version"].split("-")
-        if len(version_arr) > 1:
-            curr_res["kernel_version"] = version_arr[0]
-        else:
-            version_arr = curr_res["os_version"].split(".", 2)
-            if len(version_arr) > 2:
-                curr_res["kernel_version"] = "{}.{}".format(version_arr[0], version_arr[1])
-
-        if curr_res["last_state_change"]:
-            time_label = _get_time_label(curr_res["last_state_change"], True)
-            curr_res["last_state_change"] = "{timeLabel}".format(timeLabel=time_label)
 
         account = curr_res['account']
 
@@ -342,20 +320,17 @@ def _get_ctx_result(result, provides):
         ctx_result["data"] = dict()
         return ctx_result
 
+    ctx_result["action"] = provides
     if provides == "get system info":
         ctx_result["data"] = _parse_server_data(data[0])
-    elif provides in ["list processes"]:
+    elif provides in ["list processes", "get process"]:
         ctx_result["data"] = data
-    elif provides in ["get package", "get process", "get vulnerability"]:
-        ctx_result["data"] = json.dumps(_parsed_data(data, provides))
+    elif provides in ["list servers", "get vulnerability", "list vulnerabilities", "list packages", "get package"]:
+        ctx_result["data"] = _parsed_data(data, provides)
     elif provides == "get user":
-        ctx_result["data"] = json.dumps(parse_user_response(data))
+        ctx_result["data"] = parse_user_response(data)
     elif provides == 'list users':
         ctx_result["data"] = parse_user_details(data)
-    elif provides == "list packages":
-        ctx_result["data"] = _parsed_data(data, provides)
-    elif provides == "list vulnerabilities":
-        ctx_result["data"] = _parsed_data(data[0], provides)
     else:
         ctx_result["data"] = data[0]
     return ctx_result
@@ -371,15 +346,15 @@ def display_details(provides, all_app_runs, context):
                 continue
             results.append(ctx_result)
 
-    return_page = {"get package": "cloudpassagehalo_servers_information.html",
-                   "get process": "cloudpassagehalo_servers_information.html",
-                   "get vulnerability": "cloudpassagehalo_servers_information.html",
-                   "get user": "cloudpassagehalo_servers_information.html",
+    return_page = {"get package": "cloudpassagehalo_package_information.html",
+                   "get process": "cloudpassagehalo_display_processes.html",
+                   "get vulnerability": "cloudpassagehalo_vulnerability_details.html",
+                   "get user": "cloudpassagehalo_display_user_info.html",
                    "list packages": "cloudpassagehalo_package_information.html",
                    "list vulnerabilities": "cloudpassagehalo_vulnerability_details.html",
                    "list processes": "cloudpassagehalo_display_processes.html",
                    "list users": "cloudpassagehalo_display_users.html",
-                   "get system info": "cloudpassagehalo_server_information.html"
-                   }
+                   "get system info": "cloudpassagehalo_server_information.html",
+                   "list servers": "cloudpassagehalo_servers_information.html"}
 
     return return_page[provides]

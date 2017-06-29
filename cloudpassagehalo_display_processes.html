@@ -136,6 +136,17 @@ of Phantom Cyber Corporation.
             </a></td>
         </tr>
         {% endif %}
+        {% if result.param.process_name %}
+        <tr>
+        <td>Process name:</td>
+        <td><a href="javascript:;"
+               onclick="context_menu(this, [{'contains': ['process name'], 'value': '{{result.param.process_name}}' }], 0, {{ container.id }}, null, false);">
+            {{result.param.process_name}}
+            &nbsp;
+            <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+        </a></td>
+        </tr>
+        {% endif %}
     </table>
     <h3 class="wf-h3-style">Process Information</h3>
         <div class="processes">
@@ -147,6 +158,12 @@ of Phantom Cyber Corporation.
                         <th>Command</th>
                         <th>Username</th>
                         <th>CPU %</th>
+                        {% if result.action == "get process" %}
+                        <th>Server ID</th>
+                        <th>Primary IP address</th>
+                        <th>Hostname</th>
+                        <th>AWS Instance ID</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -172,6 +189,32 @@ of Phantom Cyber Corporation.
                             <td>{{ item.cpu_percent }}</td>
                             {% else %}
                             <td>{{ item.cpu_usage }}</td>
+                            {% endif %}
+                            {% if result.action == "get process" %}
+                            <td>{{ item.server_info_id}}</td>
+                            <td><a href="javascript:;"
+                                       onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{ item.server_info_primary_ip_address }}' }], 0, {{ container.id }}, null, false);">
+                                    {{ item.server_info_primary_ip_address }}
+                                    &nbsp;
+                                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                                </a></td>
+                            <td><a href="javascript:;"
+                                       onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{ item.server_info_hostname}}' }], 0, {{ container.id }}, null, false);">
+                                    {{ item.server_info_hostname}}
+                                    &nbsp;
+                                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                                </a></td>
+                            {% if item.server_info_ec2_instance_id %}
+                            <td>
+                                <a href="javascript:;"
+                                       onclick="context_menu(this, [{'contains': ['cloudpassagehalo aws instance id'], 'value': '{{item.server_info_ec2_instance_id}}' }], 0, {{ container.id }}, null, false);">
+                                    {{item.server_info_ec2_instance_id}}
+                                    &nbsp;
+                                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                                </a></td>
+                            {% else %}
+                            <td><div class="center">-</div></td>
+                            {% endif %}
                             {% endif %}
                         </tr>
                     {% endfor %}
