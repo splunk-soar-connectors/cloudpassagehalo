@@ -12,19 +12,23 @@
 #
 # --
 
+# Needed to fix a CFFI issue
+from ctypes import *
+cdll.LoadLibrary('/usr/lib64/python2.7/site-packages/.libs_cffi_backend/libffi-72499c49.so.6.0.4')
+
 # Standard library imports
-import json
-import base64
-import urllib
-import requests
+import json  # noqa
+import base64  # noqa
+import urllib  # noqa
+import requests  # noqa
 
 # Phantom imports
-import phantom.app as phantom
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
+import phantom.app as phantom  # noqa
+from phantom.base_connector import BaseConnector  # noqa
+from phantom.action_result import ActionResult  # noqa
 
 # Local imports
-import cloudpassagehalo_consts as consts
+import cloudpassagehalo_consts as consts  # noqa
 
 # Dictionary that maps each error code with its corresponding message
 ERROR_RESPONSE_DICT = {
