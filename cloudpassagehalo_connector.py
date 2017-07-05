@@ -13,8 +13,11 @@
 # --
 
 # Needed to fix a CFFI issue
-from ctypes import *
-cdll.LoadLibrary('/usr/lib64/python2.7/site-packages/.libs_cffi_backend/libffi-72499c49.so.6.0.4')
+try:
+    from ctypes import cdll
+    cdll.LoadLibrary('/usr/lib64/python2.7/site-packages/.libs_cffi_backend/libffi-72499c49.so.6.0.4')
+except:
+    pass
 
 # Standard library imports
 import json  # noqa
