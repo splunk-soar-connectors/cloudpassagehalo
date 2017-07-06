@@ -4,7 +4,7 @@
   "description": "This app supports variety of investigative actions on CloudPassage Halo.",
   "publisher": "Phantom",
   "package_name": "phantom_cloudpassagehalo",
-  "licence": "Copyright (c) Phantom Cyber Corporation 2017",
+  "license": "Copyright (c) Phantom Cyber Corporation 2017",
   "main_module": "cloudpassagehalo_connector.pyc",
   "type": "investigative",
   "app_version": "1.0.3",
