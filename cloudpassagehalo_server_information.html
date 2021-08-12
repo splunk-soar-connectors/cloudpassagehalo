@@ -1,10 +1,6 @@
 {% extends 'widgets/widget_template.html' %}
 {% load custom_template %}
 
-{% block title_color %}{{ title_color|default:'white' }}{% endblock %}
-{% block title_text_color %}{{ title_text_color|default:'rgb(101, 71, 150)' }}{% endblock %}
-{% block body_color %}{{ body_color|default:'white' }}{% endblock %}
-{% block body_text_color %}{{ body_text_color|default:'black' }}{% endblock %}
 {% block custom_title_prop %}{% if title_logo %}style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"{% endif %}{% endblock %}
 {% block title1 %}{{ title1 }}{% endblock %}
 {% block title2 %}{{ title2 }}{% endblock %}
@@ -16,29 +12,19 @@
 <!--
 File: cloudpassagehalo/cloudpassagehalo_server_information.html
 
-Copyright (c) Phantom Cyber Corporation, 2017
-
-This unpublished material is proprietary to Phantom Cyber.
-All rights reserved. The methods and
-techniques described herein are considered trade secrets
-and/or confidential. Reproduction or distribution, in whole
-or in part, is forbidden except by express written permission
-of Phantom Cyber Corporation.
+# Copyright (c) 2017-2021 Splunk Inc.
+#
+# SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+# without a valid written license from Splunk Inc. is PROHIBITED.
 -->
 
 <style>
 
-    .cloudpassagehalo-report a:link {
-    color: black;
-    }
 
     .cloudpassagehalo-report a:hover {
     text-decoration:underline;
     }
 
-    .cloudpassagehalo-report a:visited {
-    color: black;
-    }
 
     .cloudpassagehalo-report .wf-table-vertical {
     width: initial;
@@ -47,7 +33,7 @@ of Phantom Cyber Corporation.
 
     .cloudpassagehalo-report .wf-table-vertical td{
     padding: 5px;
-    border: 1px solid rgb(234, 234, 234);
+    border: 1px solid;
     }
 
     .cloudpassagehalo-report .wf-table-vertical tr td:first-child {
@@ -55,22 +41,21 @@ of Phantom Cyber Corporation.
     }
 
     .cloudpassagehalo-report .wf-table-horizontal {
-    border: 1px solid rgb(234, 234, 234);
+    border: 1px solid;
     font-size: 12px;
     padding-right: 10px;
     }
 
     .cloudpassagehalo-report .wf-table-horizontal th {
     text-align: center;
-    border: 1px solid rgb(234, 234, 234);
+    border: 1px solid;
     text-transform: uppercase;
     font-weight: normal;
-    color: rgb(108, 129, 139);
     padding: 5px;
     }
 
     .cloudpassagehalo-report .wf-table-horizontal td {
-    border: 1px solid rgb(234, 234, 234);
+    border: 1px solid;
     padding: 5px;
     padding-left: 4px;
     }
@@ -116,7 +101,7 @@ of Phantom Cyber Corporation.
     content: "\25cf"; font-size: 10px;
     }
 
-    .cloudpassagehalo-report .metadata_div .panel-default>.panel-heading {
+    .cloudpassagehalo-report .metadata_div>.panel-heading {
     background-image: none
     }
 
@@ -170,7 +155,7 @@ of Phantom Cyber Corporation.
     <div class="metadata_div">
         <!--OS-->
         <div class="panel-group" id="server-information">
-            <div class="panel panel-default">
+            <div class="panel">
                 <div class="panel-heading">
                     <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="os-information" href="#os-information-table">OS:</a>
@@ -213,7 +198,7 @@ of Phantom Cyber Corporation.
                 </div>
             </div>
             <div class="panel-group" id="network-information">
-                <div class="panel panel-default">
+                <div class="panel">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="server-information"
@@ -298,7 +283,7 @@ of Phantom Cyber Corporation.
             </div>
             {% if result.data.aws_ec2 %}
             <div class="panel-group" id="ec2-information">
-                <div class="panel panel-default">
+                <div class="panel">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="server-information"
@@ -383,7 +368,7 @@ of Phantom Cyber Corporation.
             </div>
             {% endif %}
             <div class="panel-group" id="halo-information">
-                <div class="panel panel-default">
+                <div class="panel">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="server-information"
@@ -416,7 +401,7 @@ of Phantom Cyber Corporation.
                 </div>
             </div>
             <div class="panel-group" id="firewall-information">
-                <div class="panel panel-default">
+                <div class="panel">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="server-information"

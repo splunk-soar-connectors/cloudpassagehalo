@@ -1,16 +1,10 @@
 # --
 # File: cloudpassagehalo/cloudpassagehalo_connector.py
 #
-# Copyright (c) Phantom Cyber Corporation, 2017
+# Copyright (c) 2017-2021 Splunk Inc.
 #
-# This unpublished material is proprietary to Phantom Cyber.
-# All rights reserved. The methods and
-# techniques described herein are considered trade secrets
-# and/or confidential. Reproduction or distribution, in whole
-# or in part, is forbidden except by express written permission
-# of Phantom Cyber Corporation.
-#
-# --
+# SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+# without a valid written license from Splunk Inc. is PROHIBITED.
 
 # Needed to fix a CFFI issue
 try:
@@ -22,8 +16,8 @@ except:
 # Standard library imports
 import json  # noqa
 import base64  # noqa
-import urllib  # noqa
 import requests  # noqa
+import sys
 
 # Phantom imports
 import phantom.app as phantom  # noqa
@@ -70,6 +64,12 @@ class CloudpassagehaloConnector(BaseConnector):
         self._url = config[consts.CLOUDPASSAGEHALO_CONFIG_URL].strip("/")
         self._client_id = config[consts.CLOUDPASSAGEHALO_CONFIG_CLIENT_ID]
         self._client_secret = config[consts.CLOUDPASSAGEHALO_CONFIG_CLIENT_SECRET]
+
+        # Fetching the Python major version
+        try:
+            self._python_version = int(sys.version_info[0])
+        except:
+            return self.set_status(phantom.APP_ERROR, "Error occurred while getting the Phantom server's Python major version")
 
         return phantom.APP_SUCCESS
 
@@ -205,9 +205,19 @@ class CloudpassagehaloConnector(BaseConnector):
         :return: status success/failure
         """
 
+        # Need to fix urllib issue
+        if self._python_version == 3:
+            from urllib import parse as urllib
+        else:
+            import urllib
+
         params = urllib.urlencode({'grant_type': 'client_credentials'})
-        self._header = {"Authorization": "Basic {}".format(
-            base64.b64encode("{}:{}".format(self._client_id, self._client_secret)))}
+        try:
+            self._header = {"Authorization": "Basic {}".format(
+                base64.b64encode("{}:{}".format(self._client_id, self._client_secret)))}
+        except TypeError:
+            self._header = {"Authorization": "Basic {}".format(
+                base64.b64encode(("{}:{}".format(self._client_id, self._client_secret)).encode('UTF-8')).decode('utf-8'))}
 
         # Querying endpoint to generate token
         generate_token_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_AUTH, action_result,
@@ -1059,14 +1069,14 @@ if __name__ == '__main__':
 
     pudb.set_trace()
     if len(sys.argv) < 2:
-        print 'No test json specified as input'
+        print('No test json specified as input')
         exit(0)
     with open(sys.argv[1]) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
-        print json.dumps(in_json, indent=4)
+        print(json.dumps(in_json, indent=4))
         connector = CloudpassagehaloConnector()
         connector.print_progress_message = True
         return_value = connector._handle_action(json.dumps(in_json), None)
-        print json.dumps(json.loads(return_value), indent=4)
+        print(json.dumps(json.loads(return_value), indent=4))
     exit(0)
