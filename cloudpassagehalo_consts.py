@@ -1,5 +1,5 @@
 # --
-# File: cloudpassagehalo/cloudpassagehalo_consts.py
+# File: cloudpassagehalo_consts.py
 #
 # Copyright (c) 2017-2021 Splunk Inc.
 #

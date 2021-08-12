@@ -1,5 +1,5 @@
 # --
-# File: cloudpassagehalo/cloudpassagehalo_connector.py
+# File: cloudpassagehalo_connector.py
 #
 # Copyright (c) 2017-2021 Splunk Inc.
 #
@@ -17,7 +17,6 @@ except:
 import json  # noqa
 import base64  # noqa
 import requests  # noqa
-import sys
 
 # Phantom imports
 import phantom.app as phantom  # noqa
