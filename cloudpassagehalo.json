@@ -17,7 +17,7 @@
     "logo_dark": "logo_cloudpassage_dark.svg",
     "python_version": "3",
     "latest_tested_versions": [
-        "On cloud, tested on 12th Aug 2021"
+        "On cloud, tested on August 12, 2021"
     ],
     "configuration": {
         "url": {

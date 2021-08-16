@@ -13,12 +13,6 @@ try:
 except:
     pass
 
-# Needed to fix a urllib issue
-try:
-    from urllib import parse as urllib
-except ImportError:
-    import urllib
-
 # Standard library imports
 import json  # noqa
 import base64  # noqa
@@ -28,6 +22,7 @@ import requests  # noqa
 import phantom.app as phantom  # noqa
 from phantom.base_connector import BaseConnector  # noqa
 from phantom.action_result import ActionResult  # noqa
+from urllib import parse as urllib
 
 # Local imports
 import cloudpassagehalo_consts as consts  # noqa
@@ -103,10 +98,10 @@ class CloudpassagehaloConnector(BaseConnector):
         try:
             if timeout:
                 response = request_func("{}{}".format(self._url, endpoint), params=params, headers=self._header,
-                                        timeout=timeout, verify=False)
+                                        timeout=timeout, verify=True)
             else:
                 response = request_func("{}{}".format(self._url, endpoint), params=params, headers=self._header,
-                                        verify=False)
+                                        verify=True)
 
             # store the r_text in debug data, it will get dumped in the logs if an error occurs
             if hasattr(action_result, 'add_debug_data'):
@@ -207,12 +202,8 @@ class CloudpassagehaloConnector(BaseConnector):
         params = urllib.urlencode({'grant_type': 'client_credentials'})
 
         # Need to fix base64.b64encode issue as it accept bytes-like object
-        try:
-            self._header = {"Authorization": "Basic {}".format(
-                base64.b64encode("{}:{}".format(self._client_id, self._client_secret)))}
-        except TypeError:
-            self._header = {"Authorization": "Basic {}".format(
-                base64.b64encode(("{}:{}".format(self._client_id, self._client_secret)).encode('UTF-8')).decode('utf-8'))}
+        self._header = {"Authorization": "Basic {}".format(
+            base64.b64encode(("{}:{}".format(self._client_id, self._client_secret)).encode('UTF-8')).decode('utf-8'))}
 
         # Querying endpoint to generate token
         generate_token_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_AUTH, action_result,
