@@ -13,6 +13,12 @@ try:
 except:
     pass
 
+# Needed to fix a urllib issue
+try:
+    from urllib import parse as urllib
+except ImportError:
+    import urllib
+
 # Standard library imports
 import json  # noqa
 import base64  # noqa
@@ -63,12 +69,6 @@ class CloudpassagehaloConnector(BaseConnector):
         self._url = config[consts.CLOUDPASSAGEHALO_CONFIG_URL].strip("/")
         self._client_id = config[consts.CLOUDPASSAGEHALO_CONFIG_CLIENT_ID]
         self._client_secret = config[consts.CLOUDPASSAGEHALO_CONFIG_CLIENT_SECRET]
-
-        # Fetching the Python major version
-        try:
-            self._python_version = int(sys.version_info[0])
-        except:
-            return self.set_status(phantom.APP_ERROR, "Error occurred while getting the Phantom server's Python major version")
 
         return phantom.APP_SUCCESS
 
@@ -204,13 +204,9 @@ class CloudpassagehaloConnector(BaseConnector):
         :return: status success/failure
         """
 
-        # Need to fix urllib issue
-        if self._python_version == 3:
-            from urllib import parse as urllib
-        else:
-            import urllib
-
         params = urllib.urlencode({'grant_type': 'client_credentials'})
+
+        # Need to fix base64.b64encode issue as it accept bytes-like object
         try:
             self._header = {"Authorization": "Basic {}".format(
                 base64.b64encode("{}:{}".format(self._client_id, self._client_secret)))}
@@ -651,7 +647,7 @@ class CloudpassagehaloConnector(BaseConnector):
             for finding in vuln_response["scan"].get("findings", []):
                 cve_entries = finding.get("cve_entries")
                 if cve_entries is not None:
-                    filtered_list = filter(lambda x: x['cve_entry'] == cve_number, cve_entries)
+                    filtered_list = [x for x in cve_entries if x['cve_entry'] == cve_number]
                     if filtered_list:
                         finding["cve_entries"] = filtered_list
                         if finding["status"] == "bad":
