@@ -1,16 +1,10 @@
 # --
-# File: cloudpassagehalo/cloudpassagehalo_connector.py
+# File: cloudpassagehalo_connector.py
 #
-# Copyright (c) Phantom Cyber Corporation, 2017
+# Copyright (c) 2017-2021 Splunk Inc.
 #
-# This unpublished material is proprietary to Phantom Cyber.
-# All rights reserved. The methods and
-# techniques described herein are considered trade secrets
-# and/or confidential. Reproduction or distribution, in whole
-# or in part, is forbidden except by express written permission
-# of Phantom Cyber Corporation.
-#
-# --
+# SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+# without a valid written license from Splunk Inc. is PROHIBITED.
 
 # Needed to fix a CFFI issue
 try:
@@ -22,13 +16,13 @@ except:
 # Standard library imports
 import json  # noqa
 import base64  # noqa
-import urllib  # noqa
 import requests  # noqa
 
 # Phantom imports
 import phantom.app as phantom  # noqa
 from phantom.base_connector import BaseConnector  # noqa
 from phantom.action_result import ActionResult  # noqa
+from urllib import parse as urllib
 
 # Local imports
 import cloudpassagehalo_consts as consts  # noqa
@@ -104,10 +98,10 @@ class CloudpassagehaloConnector(BaseConnector):
         try:
             if timeout:
                 response = request_func("{}{}".format(self._url, endpoint), params=params, headers=self._header,
-                                        timeout=timeout, verify=False)
+                                        timeout=timeout, verify=True)
             else:
                 response = request_func("{}{}".format(self._url, endpoint), params=params, headers=self._header,
-                                        verify=False)
+                                        verify=True)
 
             # store the r_text in debug data, it will get dumped in the logs if an error occurs
             if hasattr(action_result, 'add_debug_data'):
@@ -206,8 +200,10 @@ class CloudpassagehaloConnector(BaseConnector):
         """
 
         params = urllib.urlencode({'grant_type': 'client_credentials'})
+
+        # Need to fix base64.b64encode issue as it accept bytes-like object
         self._header = {"Authorization": "Basic {}".format(
-            base64.b64encode("{}:{}".format(self._client_id, self._client_secret)))}
+            base64.b64encode(("{}:{}".format(self._client_id, self._client_secret)).encode('UTF-8')).decode('utf-8'))}
 
         # Querying endpoint to generate token
         generate_token_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_AUTH, action_result,
@@ -642,7 +638,7 @@ class CloudpassagehaloConnector(BaseConnector):
             for finding in vuln_response["scan"].get("findings", []):
                 cve_entries = finding.get("cve_entries")
                 if cve_entries is not None:
-                    filtered_list = filter(lambda x: x['cve_entry'] == cve_number, cve_entries)
+                    filtered_list = [x for x in cve_entries if x['cve_entry'] == cve_number]
                     if filtered_list:
                         finding["cve_entries"] = filtered_list
                         if finding["status"] == "bad":
@@ -1059,14 +1055,14 @@ if __name__ == '__main__':
 
     pudb.set_trace()
     if len(sys.argv) < 2:
-        print 'No test json specified as input'
+        print('No test json specified as input')
         exit(0)
     with open(sys.argv[1]) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
-        print json.dumps(in_json, indent=4)
+        print(json.dumps(in_json, indent=4))
         connector = CloudpassagehaloConnector()
         connector.print_progress_message = True
         return_value = connector._handle_action(json.dumps(in_json), None)
-        print json.dumps(json.loads(return_value), indent=4)
+        print(json.dumps(json.loads(return_value), indent=4))
     exit(0)

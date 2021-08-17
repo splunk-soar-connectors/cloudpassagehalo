@@ -1,10 +1,6 @@
 {% extends 'widgets/widget_template.html' %}
 {% load custom_template %}
 
-{% block title_color %}{{ title_color|default:'white' }}{% endblock %}
-{% block title_text_color %}{{ title_text_color|default:'rgb(101, 71, 150)' }}{% endblock %}
-{% block body_color %}{{ body_color|default:'white' }}{% endblock %}
-{% block body_text_color %}{{ body_text_color|default:'black' }}{% endblock %}
 {% block custom_title_prop %}{% if title_logo %}style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"{% endif %}{% endblock %}
 {% block title1 %}{{ title1 }}{% endblock %}
 {% block title2 %}{{ title2 }}{% endblock %}
@@ -14,31 +10,21 @@
 {% block widget_content %} <!-- Main Start Block -->
 
 <!--
-File: cloudpassagehalo/cloudpassagehalo_display_user_details.html
+File: cloudpassagehalo_display_user_details.html
 
-Copyright (c) Phantom Cyber Corporation, 2017
-
-This unpublished material is proprietary to Phantom Cyber.
-All rights reserved. The methods and
-techniques described herein are considered trade secrets
-and/or confidential. Reproduction or distribution, in whole
-or in part, is forbidden except by express written permission
-of Phantom Cyber Corporation.
+# Copyright (c) 2017-2021 Splunk Inc.
+#
+# SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+# without a valid written license from Splunk Inc. is PROHIBITED.
 -->
 
 <style>
 
-    .cloudpassagehalo-display-user-details a:link {
-    color: black;
-    }
 
     .cloudpassagehalo-display-user-details a:hover {
     text-decoration:underline;
     }
 
-    .cloudpassagehalo-display-user-details a:visited {
-    color: black;
-    }
 
     .cloudpassagehalo-display-user-details .wf-table-vertical {
     width: initial;
@@ -47,7 +33,7 @@ of Phantom Cyber Corporation.
 
     .cloudpassagehalo-display-user-details .wf-table-vertical td{
     padding: 5px;
-    border: 1px solid rgb(234, 234, 234);
+    border: 1px solid;
     }
 
     .cloudpassagehalo-display-user-details .wf-table-vertical tr td:first-child {
@@ -55,22 +41,21 @@ of Phantom Cyber Corporation.
     }
 
     .cloudpassagehalo-display-user-details .wf-table-horizontal {
-    border: 1px solid rgb(234, 234, 234);
+    border: 1px solid;
     font-size: 12px;
     padding-right: 10px;
     }
 
     .cloudpassagehalo-display-user-details .wf-table-horizontal th {
     text-align: center;
-    border: 1px solid rgb(234, 234, 234);
+    border: 1px solid;
     text-transform: uppercase;
     font-weight: normal;
-    color: rgb(108, 129, 139);
     padding: 5px;
     }
 
     .cloudpassagehalo-display-user-details .wf-table-horizontal td {
-    border: 1px solid rgb(234, 234, 234);
+    border: 1px solid;
     padding: 5px;
     padding-left: 4px;
     }
@@ -107,7 +92,7 @@ of Phantom Cyber Corporation.
     display: block !important;
     }
 
-    .cloudpassagehalo-display-user-details .metadata_div .panel-default>.panel-heading {
+    .cloudpassagehalo-display-user-details .metadata_div>.panel-heading {
     background-image: none
     }
 
@@ -175,7 +160,7 @@ of Phantom Cyber Corporation.
         <!--OS-->
         <div class="panel-group" id="user-information">
             <div class="panel-group" id="account-information">
-                <div class="panel panel-default">
+                <div class="panel">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="user-information"
@@ -202,7 +187,6 @@ of Phantom Cyber Corporation.
                             <tr>
                                 <td>Admin:</td>
                                 {% if result.data.account.admin == "Yes" %}
-                                <td style="color:red">{{result.data.account.admin}}</td>
                                 {% else %}
                                 <td>{{result.data.account.admin}}</td>
                                 {% endif %}
@@ -280,7 +264,7 @@ of Phantom Cyber Corporation.
                 </div>
             </div>
             <div class="panel-group" id="password-information">
-                <div class="panel panel-default">
+                <div class="panel">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="user-information"
@@ -353,7 +337,7 @@ of Phantom Cyber Corporation.
                 </div>
             </div>
             <div class="panel-group" id="group-information">
-                <div class="panel panel-default">
+                <div class="panel">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="user-information"
@@ -372,7 +356,7 @@ of Phantom Cyber Corporation.
             </div>
             {% if result.data.account.ssh_acl %}
             <div class="panel-group" id="ssh-information">
-                <div class="panel panel-default">
+                <div class="panel">
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="user-information"
