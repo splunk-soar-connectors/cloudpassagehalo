@@ -2,19 +2,23 @@
     "appid": "039deb1b-78dc-446f-b499-4430fe5d3db1",
     "name": "CloudPassage Halo",
     "description": "This app supports a variety of investigative actions on CloudPassage Halo",
-    "publisher": "Phantom",
+    "publisher": "Splunk",
     "package_name": "phantom_cloudpassagehalo",
-    "license": "Copyright (c) Phantom Cyber Corporation, 2017-2018",
-    "main_module": "cloudpassagehalo_connector.pyc",
+    "license": "Copyright (c) 2017-2021 Splunk Inc.",
+    "main_module": "cloudpassagehalo_connector.py",
     "type": "investigative",
-    "app_version": "1.0.8",
-    "utctime_updated": "2018-02-12T20:31:46.000000Z",
+    "app_version": "2.0.1",
+    "utctime_updated": "2021-08-17T00:39:07.000000Z",
     "product_vendor": "CloudPassage",
     "product_name": "CloudPassage Halo",
     "product_version_regex": ".*",
-    "min_phantom_version": "3.0.247",
+    "min_phantom_version": "4.9.39220",
     "logo": "logo_cloudpassage.svg",
     "logo_dark": "logo_cloudpassage_dark.svg",
+    "python_version": "3",
+    "latest_tested_versions": [
+        "On cloud, tested on August 12, 2021"
+    ],
     "configuration": {
         "url": {
             "required": true,
@@ -90,6 +94,97 @@
                 "title": "Get System Information"
             },
             "output": [
+                {
+                    "data_path": "action_result.data.*.created_at",
+                    "data_type": "string",
+                    "example_values": [
+                        "2021-08-02T09:36:33.082Z"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.group_path",
+                    "data_type": "string",
+                    "example_values": [
+                        "Splunk Phantom"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.interfaces.*.mac_address",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.docker_labels",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.docker_running",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.docker_version",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.docker_installed",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.docker_inspection",
+                    "data_type": "string",
+                    "example_values": [
+                        "Disabled"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.docker_parameters",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.containerd_running",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.containerd_version",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.container_inspection",
+                    "data_type": "string",
+                    "example_values": [
+                        "Disabled"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.containerd_installed",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.containerd_parameters",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.agent_distribution_type",
+                    "data_type": "string",
+                    "example_values": [
+                        "software"
+                    ]
+                },
                 {
                     "data_path": "action_result.data.*.read_only",
                     "data_type": "boolean"
@@ -280,7 +375,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -298,6 +397,9 @@
                     "data_type": "string",
                     "contains": [
                         "ip"
+                    ],
+                    "example_values": [
+                        "127.0.0.1"
                     ]
                 },
                 {
@@ -305,6 +407,9 @@
                     "data_type": "string",
                     "contains": [
                         "host name"
+                    ],
+                    "example_values": [
+                        "localhost"
                     ]
                 },
                 {
@@ -375,6 +480,36 @@
             },
             "output": [
                 {
+                    "data_path": "action_result.data.*.max_cvss",
+                    "data_type": "numeric",
+                    "example_values": [
+                        9.8
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.cve_entries.*.cvss_version",
+                    "data_type": "numeric",
+                    "example_values": [
+                        3.1
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.cve_entries.*.remotely_exploitable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.remotely_exploitable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.status",
                     "data_type": "string"
                 },
@@ -417,7 +552,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.cve_entries.*.cvss_score",
-                    "data_type": "string"
+                    "data_type": "numeric"
                 },
                 {
                     "data_path": "action_result.data.*.cve_entries.*.suppressed",
@@ -433,7 +568,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -451,6 +590,9 @@
                     "data_type": "string",
                     "contains": [
                         "ip"
+                    ],
+                    "example_values": [
+                        "127.0.0.1"
                     ]
                 },
                 {
@@ -458,6 +600,9 @@
                     "data_type": "string",
                     "contains": [
                         "host name"
+                    ],
+                    "example_values": [
+                        "localhost"
                     ]
                 },
                 {
@@ -513,6 +658,36 @@
                 "title": "Get Package"
             },
             "output": [
+                {
+                    "data_path": "action_result.data.*.max_cvss",
+                    "data_type": "numeric",
+                    "example_values": [
+                        9.8
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.cve_entries.*.cvss_version",
+                    "data_type": "numeric",
+                    "example_values": [
+                        3.1
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.cve_entries.*.remotely_exploitable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.remotely_exploitable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
                 {
                     "data_path": "action_result.data.*.server_info_primary_ip_address",
                     "data_type": "string",
@@ -589,7 +764,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.cve_entries.*.cvss_score",
-                    "data_type": "string"
+                    "data_type": "numeric"
                 },
                 {
                     "data_path": "action_result.data.*.cve_entries.*.suppressed",
@@ -597,7 +772,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -608,6 +787,9 @@
                     "data_type": "string",
                     "contains": [
                         "cloudpassagehalo package name"
+                    ],
+                    "example_values": [
+                        "curl.x86_64"
                     ]
                 },
                 {
@@ -720,7 +902,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -738,6 +924,9 @@
                     "data_type": "string",
                     "contains": [
                         "ip"
+                    ],
+                    "example_values": [
+                        "127.0.0.1"
                     ]
                 },
                 {
@@ -745,6 +934,9 @@
                     "data_type": "string",
                     "contains": [
                         "host name"
+                    ],
+                    "example_values": [
+                        "localhost"
                     ]
                 },
                 {
@@ -876,7 +1068,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -887,6 +1083,9 @@
                     "data_type": "string",
                     "contains": [
                         "process name"
+                    ],
+                    "example_values": [
+                        "ata_sff"
                     ]
                 },
                 {
@@ -948,6 +1147,36 @@
                 "view": "cloudpassagehalo_view.display_details"
             },
             "output": [
+                {
+                    "data_path": "action_result.data.*.scan.findings.*.max_cvss",
+                    "data_type": "numeric",
+                    "example_values": [
+                        9.8
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.cvss_version",
+                    "data_type": "numeric",
+                    "example_values": [
+                        3.1
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.remotely_exploitable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.scan.findings.*.remotely_exploitable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
                 {
                     "data_path": "action_result.data.*.id",
                     "data_type": "string"
@@ -1098,7 +1327,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -1116,6 +1349,9 @@
                     "data_type": "string",
                     "contains": [
                         "ip"
+                    ],
+                    "example_values": [
+                        "127.0.0.1"
                     ]
                 },
                 {
@@ -1123,6 +1359,9 @@
                     "data_type": "string",
                     "contains": [
                         "host name"
+                    ],
+                    "example_values": [
+                        "localhost"
                     ]
                 },
                 {
@@ -1186,6 +1425,36 @@
                 "title": "Get Vulnerability"
             },
             "output": [
+                {
+                    "data_path": "action_result.data.*.scan.findings.*.max_cvss",
+                    "data_type": "numeric",
+                    "example_values": [
+                        8.8
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.cvss_version",
+                    "data_type": "numeric",
+                    "example_values": [
+                        3.1
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.scan.findings.*.cve_entries.*.remotely_exploitable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.scan.findings.*.remotely_exploitable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
                 {
                     "data_path": "action_result.data.*.server_info_primary_ip_address",
                     "data_type": "string",
@@ -1365,7 +1634,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -1376,6 +1649,9 @@
                     "data_type": "string",
                     "contains": [
                         "cloudpassagehalo cve number"
+                    ],
+                    "example_values": [
+                        "CVE-2020-25695"
                     ]
                 },
                 {
@@ -1445,6 +1721,92 @@
                 "view": "cloudpassagehalo_view.display_details"
             },
             "output": [
+                {
+                    "data_path": "action_result.data.*.groups",
+                    "data_type": "string",
+                    "example_values": [
+                        "adm"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.expires",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.home_exists",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sudo_access",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.last_login_from",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.password_locked",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.password_expired",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.password_expires",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.last_password_change",
+                    "data_type": "string",
+                    "example_values": [
+                        "2016-11-05T00:00:00.000Z"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.password_locked_with",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.disabled_after_days_inactive",
+                    "data_type": "numeric",
+                    "example_values": [
+                        0
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.days_warn_before_password_expiration",
+                    "data_type": "numeric",
+                    "example_values": [
+                        7
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.maximum_days_between_password_changes",
+                    "data_type": "numeric",
+                    "example_values": [
+                        99999
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.minimum_days_between_password_changes",
+                    "data_type": "numeric",
+                    "example_values": [
+                        0
+                    ]
+                },
                 {
                     "data_path": "action_result.data.*.gid",
                     "data_type": "string"
@@ -1524,7 +1886,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -1542,6 +1908,9 @@
                     "data_type": "string",
                     "contains": [
                         "ip"
+                    ],
+                    "example_values": [
+                        "127.0.0.1"
                     ]
                 },
                 {
@@ -1549,6 +1918,9 @@
                     "data_type": "string",
                     "contains": [
                         "host name"
+                    ],
+                    "example_values": [
+                        "localhost"
                     ]
                 },
                 {
@@ -1604,6 +1976,22 @@
                 "title": "Get User"
             },
             "output": [
+                {
+                    "data_path": "action_result.data.*.account.password_locked",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.account.password_locked_with",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.full_name",
+                    "data_type": "string"
+                },
                 {
                     "data_path": "action_result.data.*.server_info_primary_ip_address",
                     "data_type": "string",
@@ -1761,7 +2149,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -1772,6 +2164,9 @@
                     "data_type": "string",
                     "contains": [
                         "user name"
+                    ],
+                    "example_values": [
+                        "phantom"
                     ]
                 },
                 {
@@ -1841,6 +2236,97 @@
                 "title": "Check All Servers"
             },
             "output": [
+                {
+                    "data_path": "action_result.data.*.created_at",
+                    "data_type": "string",
+                    "example_values": [
+                        "2021-08-02T09:36:33.082Z"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.group_path",
+                    "data_type": "string",
+                    "example_values": [
+                        "Splunk Phantom"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.interfaces.*.mac_address",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.docker_labels",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.docker_running",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.docker_version",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.docker_installed",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.docker_inspection",
+                    "data_type": "string",
+                    "example_values": [
+                        "Disabled"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.docker_parameters",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.containerd_running",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.containerd_version",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.container_inspection",
+                    "data_type": "string",
+                    "example_values": [
+                        "Disabled"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.containerd_installed",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.containerd_parameters",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.agent_distribution_type",
+                    "data_type": "string",
+                    "example_values": [
+                        "software"
+                    ]
+                },
                 {
                     "data_path": "action_result.data.*.read_only",
                     "data_type": "boolean"
@@ -2031,7 +2517,11 @@
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -2042,6 +2532,9 @@
                     "data_type": "string",
                     "contains": [
                         "user name"
+                    ],
+                    "example_values": [
+                        "phantom"
                     ]
                 },
                 {
@@ -2049,6 +2542,9 @@
                     "data_type": "string",
                     "contains": [
                         "process name"
+                    ],
+                    "example_values": [
+                        "ata_sff"
                     ]
                 },
                 {
@@ -2056,6 +2552,9 @@
                     "data_type": "string",
                     "contains": [
                         "cloudpassagehalo package name"
+                    ],
+                    "example_values": [
+                        "curl.x86_64"
                     ]
                 },
                 {
@@ -2063,6 +2562,9 @@
                     "data_type": "string",
                     "contains": [
                         "cloudpassagehalo cve number"
+                    ],
+                    "example_values": [
+                        "CVE-2020-25695"
                     ]
                 },
                 {
