@@ -7,8 +7,8 @@
     "license": "Copyright (c) 2017-2021 Splunk Inc.",
     "main_module": "cloudpassagehalo_connector.py",
     "type": "investigative",
-    "app_version": "2.0.1",
-    "utctime_updated": "2021-08-17T00:39:07.000000Z",
+    "app_version": "2.0.2",
+    "utctime_updated": "2021-12-08T01:24:16.000000Z",
     "product_vendor": "CloudPassage",
     "product_name": "CloudPassage Halo",
     "product_version_regex": ".*",
@@ -16,7 +16,7 @@
     "logo": "logo_cloudpassage.svg",
     "logo_dark": "logo_cloudpassage_dark.svg",
     "python_version": "3",
-    "fips_compliant":true,
+    "fips_compliant": true,
     "latest_tested_versions": [
         "On cloud, tested on August 12, 2021"
     ],
