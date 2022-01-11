@@ -4,7 +4,7 @@
     "description": "This app supports a variety of investigative actions on CloudPassage Halo",
     "publisher": "Splunk",
     "package_name": "phantom_cloudpassagehalo",
-    "license": "Copyright (c) 2017-2021 Splunk Inc.",
+    "license": "Copyright (c) 2017-2022 Splunk Inc.",
     "main_module": "cloudpassagehalo_connector.py",
     "type": "investigative",
     "app_version": "2.0.3",
