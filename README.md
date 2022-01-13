@@ -2,7 +2,7 @@
 # CloudPassage Halo
 
 Publisher: Splunk  
-Connector Version: 2\.0\.2  
+Connector Version: 2\.0\.4  
 Product Vendor: CloudPassage  
 Product Name: CloudPassage Halo  
 Product Version Supported (regex): "\.\*"  
