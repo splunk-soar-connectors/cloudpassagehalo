@@ -118,9 +118,9 @@ class CloudpassagehaloConnector(BaseConnector):
                 else:
                     action_result.add_debug_data({'r_text': 'r is None'})
         except Exception as e:
-            self.debug_print(consts.CLOUDPASSAGEHALO_ERR_SERVER_CONNECTION, e)
+            self.debug_print(consts.CLOUDPASSAGEHALO_ERR_SERVER_CONN, e)
             # set the action_result status to error, the handler function will most probably return as is
-            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_SERVER_CONNECTION, e),\
+            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_SERVER_CONN, e),\
                 response_data
 
         # Try parsing the json
@@ -182,7 +182,7 @@ class CloudpassagehaloConnector(BaseConnector):
         """
 
         action_result = ActionResult()
-        self.save_progress(consts.CLOUDPASSAGEHALO_TEST_CONNECTIVITY_MSG)
+        self.save_progress(consts.CLOUDPASSAGEHALO_TEST_CONN_MSG)
         self.save_progress("Configured URL: {url}".format(url=self._url))
 
         # Querying endpoint to generate access token
@@ -194,7 +194,7 @@ class CloudpassagehaloConnector(BaseConnector):
             self.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_TEST_CONN_FAIL)
             return action_result.get_status()
 
-        self.set_status_save_progress(phantom.APP_SUCCESS, consts.CLOUDPASSAGEHALO_TEST_CONN_SUCC)
+        self.set_status_save_progress(phantom.APP_SUCCESS, consts.CLOUDPASSAGEHALO_TEST_CONN_SUCCESS)
         return action_result.get_status()
 
     def _generate_api_token(self, action_result, timeout=None):
