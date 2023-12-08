@@ -1,6 +1,6 @@
 # File: cloudpassagehalo_connector.py
 #
-# Copyright (c) 2017-2022 Splunk Inc.
+# Copyright (c) 2017-2023 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ ERROR_RESPONSE_DICT = {
     consts.CLOUDPASSAGEHALO_REST_RESP_BAD_REQUEST: consts.CLOUDPASSAGEHALO_REST_RESP_BAD_REQUEST_MSG,
     consts.CLOUDPASSAGEHALO_REST_RESP_FORBIDDEN: consts.CLOUDPASSAGEHALO_REST_RESP_FORBIDDEN_MSG,
     consts.CLOUDPASSAGEHALO_REST_RESP_NOT_FOUND: consts.CLOUDPASSAGEHALO_REST_RESP_NOT_FOUND_MSG,
-    consts.CLOUDPASSAGEHALO_REST_RESP_INTERNAL_SERVER_ERROR: consts.CLOUDPASSAGEHALO_REST_RESP_INTERNAL_SERVER_ERROR_MSG
+    consts.CLOUDPASSAGEHALO_REST_RESP_INTERNAL_SERVER_ERR: consts.CLOUDPASSAGEHALO_REST_RESP_INTERNAL_SERVER_ERR_MSG
 }
 
 
@@ -118,9 +118,9 @@ class CloudpassagehaloConnector(BaseConnector):
                 else:
                     action_result.add_debug_data({'r_text': 'r is None'})
         except Exception as e:
-            self.debug_print(consts.CLOUDPASSAGEHALO_ERR_SERVER_CONNECTION, e)
+            self.debug_print(consts.CLOUDPASSAGEHALO_ERR_SERVER_CONN, e)
             # set the action_result status to error, the handler function will most probably return as is
-            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_SERVER_CONNECTION, e),\
+            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_SERVER_CONN, e),\
                 response_data
 
         # Try parsing the json
@@ -161,7 +161,7 @@ class CloudpassagehaloConnector(BaseConnector):
             return phantom.APP_SUCCESS, response_data
 
         # If response code is unknown
-        message = consts.CLOUDPASSAGEHALO_REST_RESP_OTHER_ERROR_MSG
+        message = consts.CLOUDPASSAGEHALO_REST_RESP_OTHER_ERR_MSG
 
         if isinstance(response_data, dict):
             message = response_data.get("error", message)
@@ -182,7 +182,7 @@ class CloudpassagehaloConnector(BaseConnector):
         """
 
         action_result = ActionResult()
-        self.save_progress(consts.CLOUDPASSAGEHALO_TEST_CONNECTIVITY_MSG)
+        self.save_progress(consts.CLOUDPASSAGEHALO_TEST_CONN_MSG)
         self.save_progress("Configured URL: {url}".format(url=self._url))
 
         # Querying endpoint to generate access token
@@ -194,7 +194,7 @@ class CloudpassagehaloConnector(BaseConnector):
             self.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_TEST_CONN_FAIL)
             return action_result.get_status()
 
-        self.set_status_save_progress(phantom.APP_SUCCESS, consts.CLOUDPASSAGEHALO_TEST_CONN_SUCC)
+        self.set_status_save_progress(phantom.APP_SUCCESS, consts.CLOUDPASSAGEHALO_TEST_CONN_SUCCESS)
         return action_result.get_status()
 
     def _generate_api_token(self, action_result, timeout=None):
@@ -1063,7 +1063,7 @@ if __name__ == '__main__':
     pudb.set_trace()
     if len(sys.argv) < 2:
         print('No test json specified as input')
-        exit(0)
+        sys.exit(0)
     with open(sys.argv[1]) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
@@ -1072,4 +1072,4 @@ if __name__ == '__main__':
         connector.print_progress_message = True
         return_value = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(return_value), indent=4))
-    exit(0)
+    sys.exit(0)
