@@ -1,16 +1,17 @@
 {% extends 'widgets/widget_template.html' %}
 {% load custom_template %}
-
-{% block custom_title_prop %}{% if title_logo %}style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"{% endif %}{% endblock %}
+{% block custom_title_prop %}
+  {% if title_logo %}
+    style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"
+  {% endif %}
+{% endblock %}
 {% block title1 %}{{ title1 }}{% endblock %}
 {% block title2 %}{{ title2 }}{% endblock %}
-{% block custom_tools %}
-{% endblock %}
-
-{% block widget_content %} <!-- Main Start Block -->
-
-<!--File: cloudpassagehalo_display_user_info.html
-# Copyright (c) 2017-2023 Splunk Inc.
+{% block custom_tools %}{% endblock %}
+{% block widget_content %}
+  <!-- Main Start Block -->
+  <!--File: cloudpassagehalo_display_user_info.html
+# Copyright (c) 2017-2025 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -26,10 +27,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
 either express or implied. See the License for the specific language governing permissions
 and limitations under the License.
 -->
-
-<style>
-
-
+  <style>
     .cloudpassagehalo-display-users a:hover {
     text-decoration:underline;
     }
@@ -89,219 +87,242 @@ and limitations under the License.
     .cloudpassagehalo-report a.nowrap {
     white-space:nowrap;
     }
-</style>
-
-<div class="cloudpassagehalo-display-users" style="overflow: auto; width: 100%; height: 100%; padding-left:10px; padding-right:10px"> <!-- Main Div -->
-
-    {% for result in results %} <!-- loop for each result -->
-
-    {% if not result.data %}
-    <h4 class="wf-h4-style">No reports found</h4>
-    {% else %}
-    <h3 class="wf-h3-style">Info</h3>
-    <table class="wf-table-vertical">
-        {% if result.param.username %}
-        <tr>
-            <td>Username:</td>
-            <td><a href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['user name'], 'value': '{{result.param.username}}' }], 0, {{ container.id }}, null, false);">
-                {{result.param.username}}
-                &nbsp;
-                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-            </a></td>
-        </tr>
-        {% endif %}
-    </table>
-    <h3 class="wf-h3-style">User Information</h3>
+  </style>
+  <div class="cloudpassagehalo-display-users"
+       style="overflow: auto;
+              width: 100%;
+              height: 100%;
+              padding-left:10px;
+              padding-right:10px">
+    <!-- Main Div -->
+    {% for result in results %}
+      <!-- loop for each result -->
+      {% if not result.data %}
+        <h4 class="wf-h4-style">No reports found</h4>
+      {% else %}
+        <h3 class="wf-h3-style">Info</h3>
+        <table class="wf-table-vertical">
+          {% if result.param.username %}
+            <tr>
+              <td>Username:</td>
+              <td>
+                <a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['user name'], 'value': '{{ result.param.username }}' }], 0, {{ container.id }}, null, false);">
+                  {{ result.param.username }}
+                  &nbsp;
+                  <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                </a>
+              </td>
+            </tr>
+          {% endif %}
+        </table>
+        <h3 class="wf-h3-style">User Information</h3>
         <div class="users">
-            <table class="wf-table-horizontal datatable">
-                <thead>
-                    <tr>
-                        <th>User Name</th>
-                        {% if result.data.0.account.sid %}
-                        <th>Full Name</th>
-                        {% endif %}
-                        {% if result.data.0.account.sid %}
-                        <th>Admin Privilege</th>
-                        {% else %}
-                        <th>Root Privilege</th>
-                        {% endif %}
-                        <th>Active</th>
-                        {% if result.data.0.account.sid %}
-                        <th>Locked</th>
-                        {% endif %}
-                        <th>Last Login</th>
-                        {% if result.data.0.account.uid %}
-                        <th>Last Login From</th>
-                        {% endif %}
-                        <th>Expires</th>
-                        <th>Home</th>
-                        {% if result.data.0.account.sid %}
-                        <th>SID</th>
-                        {% endif %}
-                        {% if result.data.0.account.uid %}
-                        <th>UID</th>
-                        <th>GID</th>
-                        <th>SHELL</th>
-                        <th>Sudo Access</th>
-                        {% endif %}
-                        <th>Comment</th>
-                        {% if result.data.0.account.sid %}
-                        <th>Password Required</th>
-                        <th>User Can Change Password</th>
-                        {% endif %}
-                        <th>Password Last Changed</th>
-                        {% if result.data.0.account.sid %}
-                        <th>Password Expires</th>
-                        <th>Password Expired</th>
-                        {% endif %}
-                        {% if result.data.0.account.uid %}
-                        <th>Minimum Days Between Password Changes</th>
-                        <th>Maximum Days Between Password Changes</th>
-                        <th>Days Warn Before Password Expiration</th>
-                        <th>Disabled After Days Inactive</th>
-                        <th>Days Since Disabled</th>
-                        <th>Ssh Acl</th>
-                        <th>Ssh Authorized Keys</th>
-                        {% endif %}
-                        <th>Local Group Membership</th>
-                        {% if result.action == "get user" %}
-                        <th>Server ID</th>
-                        <th>Primary IP address</th>
-                        <th>Hostname</th>
-                        <th>AWS Instance ID</th>
-                        {% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for curr_data in result.data %}
-                    <tr>
-                        <td>
-                            <a href="javascript:;"
-                            onclick="context_menu(this, [{'contains': ['user name'], 'value': '{{ curr_data.account.username }}' }], 0, {{ container.id }}, null, false);">
-                            {{ curr_data.account.username }} &nbsp;
-                            <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                            </a>
-                        </td>
-                        {% if result.data.0.account.sid %}
-                        <td>{{ curr_data.account.full_name|default:'<div class="center">-</div>'}}</td>
-                        {% endif %}
-                        {% if curr_data.account.admin == "Yes" %}
-                        {% else %}
-                        <td>{{ curr_data.account.admin }}</td>
-                        {% endif %}
-                        <td>{{ curr_data.account.active }}</td>
-                        {% if curr_data.account.sid %}
-                        <td>{{ curr_data.account.locked }}</td>
-                        {% endif %}
-                        <td>{{ curr_data.account.last_login_at|default:'<div class="center">-</div>'}}</td>
-                        {% if curr_data.account.uid %}
-                        <td>{{ curr_data.account.last_login_from|default:'<div class="center">-</div>'}}</td>
-                        {% endif %}
-                        <td>{{ curr_data.account.expires|default:'<div class="center">-</div>'}}</td>
-                        <td>{{ curr_data.account.home|default:'<div class="center">-</div>'}}</td>
-                        {% if curr_data.account.sid %}
-                        <td>{{ curr_data.account.sid}}</td>
-                        {% endif %}
-                        {% if curr_data.account.uid %}
-                        <td>{{ curr_data.account.uid }}</td>
-                        <td>{{ curr_data.account.gid }}</td>
-                        <td>{{ curr_data.account.shell }}</td>
-                        <td>{{ curr_data.account.sudo_access }}</td>
-                        {% endif %}
-                        <td>{{ curr_data.account.comment|default:'<div class="center">-</div>'}}</td>
-                        {% if result.data.0.account.sid %}
-                        <td>{{ curr_data.account.password_required|default:'<div class="center">-</div>'}}</td>
-                        <td>{{ curr_data.account.password_changeable|default:'<div class="center">-</div>'}}</td>
-                        {% endif %}
-                        <td>{{ curr_data.account.last_password_change|default:'<div class="center">-</div>'}}</td>
-                        {% if result.data.0.account.sid %}
-                        <td>{{ curr_data.account.password_expires|default:'<div class="center">-</div>'}}</td>
-                        <td>{{ curr_data.account.password_expired|default:'<div class="center">-</div>'}}</td>
-                        {% endif %}
-                        {% if result.data.0.account.uid %}
-                        <td>
-                            {% if curr_data.account.minimum_days_between_password_changes or curr_data.account.minimum_days_between_password_changes == 0 %}
-                            {{ curr_data.account.minimum_days_between_password_changes }}
-                            {% else %}
-                                <div class="center">-</div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if curr_data.account.maximum_days_between_password_changes or curr_data.account.maximum_days_between_password_changes == 0 %}
-                            {{ curr_data.account.maximum_days_between_password_changes }}
-                            {% else %}
-                                <div class="center">-</div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if curr_data.account.days_warn_before_password_expiration or curr_data.account.days_warn_before_password_expiration == 0 %}
-                            {{ curr_data.account.days_warn_before_password_expiration }}
-                            {% else %}
-                                <div class="center">-</div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if curr_data.account.disabled_after_days_inactive or curr_data.account.disabled_after_days_inactive == 0 %}
-                            {{ curr_data.account.disabled_after_days_inactive }}
-                            {% else %}
-                                <div class="center">-</div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if curr_data.account.days_since_disabled or curr_data.account.days_since_disabled == 0 %}
-                            {{ curr_data.account.days_since_disabled }}
-                            {% else %}
-                                <div class="center">-</div>
-                            {% endif %}
-                        </td>
-                        <td>{{ curr_data.account.ssh_acl|default:'<div class="center">-</div>'}}</td>
-                        <td>
-                            {% if curr_data.account.ssh_authorized_keys %}
-                            {{ curr_data.account.ssh_authorized_keys.0.comment|default:'<div class="center">-</div>'}}
-                            {% else %}
-                            <div class="center">-</div>
-                            {% endif %}
-                        </td>
-                        {% endif %}
-                        <td>{{ curr_data.account.groups }}</td>
-                        {% if result.action == "get user" %}
-                        <td>{{ curr_data.server_info_id}}</td>
-                        <td><a href="javascript:;"
-                                   onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{ curr_data.server_info_primary_ip_address }}' }], 0, {{ container.id }}, null, false);">
-                                {{ curr_data.server_info_primary_ip_address }}
-                                &nbsp;
-                                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                            </a></td>
-                        <td><a href="javascript:;"
-                               onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{ curr_data.server_info_hostname}}' }], 0, {{ container.id }}, null, false);">
-                            {{ curr_data.server_info_hostname}}
-                            &nbsp;
-                            <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                            </a>
-                        </td>
-                        {% if curr_data.server_info_ec2_instance_id %}
-                        <td>
-                            <a href="javascript:;"
-                                   onclick="context_menu(this, [{'contains': ['cloudpassagehalo aws instance id'], 'value': '{{curr_data.server_info_ec2_instance_id}}' }], 0, {{ container.id }}, null, false);">
-                                {{curr_data.server_info_ec2_instance_id}}
-                                &nbsp;
-                                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                            </a></td>
-                        {% else %}
-                        <td><div class="center">-</div></td>
-                        {% endif %}
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+          <table class="wf-table-horizontal datatable">
+            <thead>
+              <tr>
+                <th>User Name</th>
+                {% if result.data.0.account.sid %}<th>Full Name</th>{% endif %}
+                {% if result.data.0.account.sid %}
+                  <th>Admin Privilege</th>
+                {% else %}
+                  <th>Root Privilege</th>
+                {% endif %}
+                <th>Active</th>
+                {% if result.data.0.account.sid %}<th>Locked</th>{% endif %}
+                <th>Last Login</th>
+                {% if result.data.0.account.uid %}<th>Last Login From</th>{% endif %}
+                <th>Expires</th>
+                <th>Home</th>
+                {% if result.data.0.account.sid %}<th>SID</th>{% endif %}
+                {% if result.data.0.account.uid %}
+                  <th>UID</th>
+                  <th>GID</th>
+                  <th>SHELL</th>
+                  <th>Sudo Access</th>
+                {% endif %}
+                <th>Comment</th>
+                {% if result.data.0.account.sid %}
+                  <th>Password Required</th>
+                  <th>User Can Change Password</th>
+                {% endif %}
+                <th>Password Last Changed</th>
+                {% if result.data.0.account.sid %}
+                  <th>Password Expires</th>
+                  <th>Password Expired</th>
+                {% endif %}
+                {% if result.data.0.account.uid %}
+                  <th>Minimum Days Between Password Changes</th>
+                  <th>Maximum Days Between Password Changes</th>
+                  <th>Days Warn Before Password Expiration</th>
+                  <th>Disabled After Days Inactive</th>
+                  <th>Days Since Disabled</th>
+                  <th>Ssh Acl</th>
+                  <th>Ssh Authorized Keys</th>
+                {% endif %}
+                <th>Local Group Membership</th>
+                {% if result.action == "get user" %}
+                  <th>Server ID</th>
+                  <th>Primary IP address</th>
+                  <th>Hostname</th>
+                  <th>AWS Instance ID</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for curr_data in result.data %}
+                <tr>
+                  <td>
+                    <a href="javascript:;"
+                       onclick="context_menu(this, [{'contains': ['user name'], 'value': '{{ curr_data.account.username }}' }], 0, {{ container.id }}, null, false);">
+                      {{ curr_data.account.username }} &nbsp;
+                      <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                    </a>
+                  </td>
+                  {% if result.data.0.account.sid %}
+                    <td>
+                      {{ curr_data.account.full_name|default:'<div class="center">-</div>' }}
+                    </td>
+                  {% endif %}
+                  {% if curr_data.account.admin == "Yes" %}
+                  {% else %}
+                    <td>{{ curr_data.account.admin }}</td>
+                  {% endif %}
+                  <td>{{ curr_data.account.active }}</td>
+                  {% if curr_data.account.sid %}<td>{{ curr_data.account.locked }}</td>{% endif %}
+                  <td>
+                    {{ curr_data.account.last_login_at|default:'<div class="center">-</div>' }}
+                  </td>
+                  {% if curr_data.account.uid %}
+                    <td>
+                      {{ curr_data.account.last_login_from|default:'<div class="center">-</div>' }}
+                    </td>
+                  {% endif %}
+                  <td>
+                    {{ curr_data.account.expires|default:'<div class="center">-</div>' }}
+                  </td>
+                  <td>
+                    {{ curr_data.account.home|default:'<div class="center">-</div>' }}
+                  </td>
+                  {% if curr_data.account.sid %}<td>{{ curr_data.account.sid }}</td>{% endif %}
+                  {% if curr_data.account.uid %}
+                    <td>{{ curr_data.account.uid }}</td>
+                    <td>{{ curr_data.account.gid }}</td>
+                    <td>{{ curr_data.account.shell }}</td>
+                    <td>{{ curr_data.account.sudo_access }}</td>
+                  {% endif %}
+                  <td>
+                    {{ curr_data.account.comment|default:'<div class="center">-</div>' }}
+                  </td>
+                  {% if result.data.0.account.sid %}
+                    <td>
+                      {{ curr_data.account.password_required|default:'<div class="center">-</div>' }}
+                    </td>
+                    <td>
+                      {{ curr_data.account.password_changeable|default:'<div class="center">-</div>' }}
+                    </td>
+                  {% endif %}
+                  <td>
+                    {{ curr_data.account.last_password_change|default:'<div class="center">-</div>' }}
+                  </td>
+                  {% if result.data.0.account.sid %}
+                    <td>
+                      {{ curr_data.account.password_expires|default:'<div class="center">-</div>' }}
+                    </td>
+                    <td>
+                      {{ curr_data.account.password_expired|default:'<div class="center">-</div>' }}
+                    </td>
+                  {% endif %}
+                  {% if result.data.0.account.uid %}
+                    <td>
+                      {% if curr_data.account.minimum_days_between_password_changes or curr_data.account.minimum_days_between_password_changes == 0 %}
+                        {{ curr_data.account.minimum_days_between_password_changes }}
+                      {% else %}
+                        <div class="center">-</div>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if curr_data.account.maximum_days_between_password_changes or curr_data.account.maximum_days_between_password_changes == 0 %}
+                        {{ curr_data.account.maximum_days_between_password_changes }}
+                      {% else %}
+                        <div class="center">-</div>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if curr_data.account.days_warn_before_password_expiration or curr_data.account.days_warn_before_password_expiration == 0 %}
+                        {{ curr_data.account.days_warn_before_password_expiration }}
+                      {% else %}
+                        <div class="center">-</div>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if curr_data.account.disabled_after_days_inactive or curr_data.account.disabled_after_days_inactive == 0 %}
+                        {{ curr_data.account.disabled_after_days_inactive }}
+                      {% else %}
+                        <div class="center">-</div>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if curr_data.account.days_since_disabled or curr_data.account.days_since_disabled == 0 %}
+                        {{ curr_data.account.days_since_disabled }}
+                      {% else %}
+                        <div class="center">-</div>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {{ curr_data.account.ssh_acl|default:'<div class="center">-</div>' }}
+                    </td>
+                    <td>
+                      {% if curr_data.account.ssh_authorized_keys %}
+                        {{ curr_data.account.ssh_authorized_keys.0.comment|default:'<div class="center">-</div>' }}
+                      {% else %}
+                        <div class="center">-</div>
+                      {% endif %}
+                    </td>
+                  {% endif %}
+                  <td>{{ curr_data.account.groups }}</td>
+                  {% if result.action == "get user" %}
+                    <td>{{ curr_data.server_info_id }}</td>
+                    <td>
+                      <a href="javascript:;"
+                         onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{ curr_data.server_info_primary_ip_address }}' }], 0, {{ container.id }}, null, false);">
+                        {{ curr_data.server_info_primary_ip_address }}
+                        &nbsp;
+                        <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                      </a>
+                    </td>
+                    <td>
+                      <a href="javascript:;"
+                         onclick="context_menu(this, [{'contains': ['ip'], 'value': '{{ curr_data.server_info_hostname }}' }], 0, {{ container.id }}, null, false);">
+                        {{ curr_data.server_info_hostname }}
+                        &nbsp;
+                        <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                      </a>
+                    </td>
+                    {% if curr_data.server_info_ec2_instance_id %}
+                      <td>
+                        <a href="javascript:;"
+                           onclick="context_menu(this, [{'contains': ['cloudpassagehalo aws instance id'], 'value': '{{ curr_data.server_info_ec2_instance_id }}' }], 0, {{ container.id }}, null, false);">
+                          {{ curr_data.server_info_ec2_instance_id }}
+                          &nbsp;
+                          <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                        </a>
+                      </td>
+                    {% else %}
+                      <td>
+                        <div class="center">-</div>
+                      </td>
+                    {% endif %}
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-        {% endif %}
+      {% endif %}
     {% endfor %}
-</div>
-
-<script>
+  </div>
+  <script>
 $.extend(true, $.fn.dataTable.defaults, {
     "searching": true,
     "bLengthChange": false,
@@ -318,6 +339,5 @@ $.extend(true, $.fn.dataTable.defaults, {
     }
   });
   $('.datatable').DataTable();
-</script>
-
+  </script>
 {% endblock %}
