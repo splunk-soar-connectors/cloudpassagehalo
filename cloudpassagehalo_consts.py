@@ -14,7 +14,7 @@
 # and limitations under the License.
 CLOUDPASSAGEHALO_CONFIG_URL = "url"
 CLOUDPASSAGEHALO_CONFIG_CLIENT_ID = "client_id"
-CLOUDPASSAGEHALO_CONFIG_CLIENT_SECRET = "client_secret"
+CLOUDPASSAGEHALO_CONFIG_CLIENT_SECRET = "client_secret"  # pragma: allowlist secret
 CLOUDPASSAGEHALO_REST_RESP_SUCCESS = 200
 CLOUDPASSAGEHALO_REST_RESP_UNAUTHORIZED = 401
 CLOUDPASSAGEHALO_REST_RESP_UNAUTHORIZED_MSG = "The supplied credentials, if any, are not sufficient to access the resource."
