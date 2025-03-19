@@ -1,6 +1,6 @@
 # File: cloudpassagehalo_connector.py
 #
-# Copyright (c) 2017-2023 Splunk Inc.
+# Copyright (c) 2017-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,21 +17,22 @@
 # Needed to fix a CFFI issue
 try:
     from ctypes import cdll
-    cdll.LoadLibrary('/usr/lib64/python2.7/site-packages/.libs_cffi_backend/libffi-72499c49.so.6.0.4')
+
+    cdll.LoadLibrary("/usr/lib64/python2.7/site-packages/.libs_cffi_backend/libffi-72499c49.so.6.0.4")
 except:
     pass
 
 import base64  # noqa
-import json  # noqa
+import json
 from urllib import parse as urllib
 
-import phantom.app as phantom  # noqa
-import requests  # noqa
-from phantom.action_result import ActionResult  # noqa
-from phantom.base_connector import BaseConnector  # noqa
+import phantom.app as phantom
+import requests
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
 
 # Local imports
-import cloudpassagehalo_consts as consts  # noqa
+import cloudpassagehalo_consts as consts
 
 # Dictionary that maps each error code with its corresponding message
 ERROR_RESPONSE_DICT = {
@@ -39,16 +40,14 @@ ERROR_RESPONSE_DICT = {
     consts.CLOUDPASSAGEHALO_REST_RESP_BAD_REQUEST: consts.CLOUDPASSAGEHALO_REST_RESP_BAD_REQUEST_MSG,
     consts.CLOUDPASSAGEHALO_REST_RESP_FORBIDDEN: consts.CLOUDPASSAGEHALO_REST_RESP_FORBIDDEN_MSG,
     consts.CLOUDPASSAGEHALO_REST_RESP_NOT_FOUND: consts.CLOUDPASSAGEHALO_REST_RESP_NOT_FOUND_MSG,
-    consts.CLOUDPASSAGEHALO_REST_RESP_INTERNAL_SERVER_ERR: consts.CLOUDPASSAGEHALO_REST_RESP_INTERNAL_SERVER_ERR_MSG
+    consts.CLOUDPASSAGEHALO_REST_RESP_INTERNAL_SERVER_ERR: consts.CLOUDPASSAGEHALO_REST_RESP_INTERNAL_SERVER_ERR_MSG,
 }
 
 
 class CloudpassagehaloConnector(BaseConnector):
-
     def __init__(self):
-
         # Calling the BaseConnector's init function
-        super(CloudpassagehaloConnector, self).__init__()
+        super().__init__()
 
         self._client_id = None
         self._client_secret = None
@@ -59,7 +58,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return
 
     def initialize(self):
-        """ This is an optional function that can be implemented by the AppConnector derived class. Since the
+        """This is an optional function that can be implemented by the AppConnector derived class. Since the
         configuration dictionary is already validated by the time this function is called, it's a good place to do any
         extra initialization of any internal modules. This function MUST return a value of either phantom.APP_SUCCESS or
         phantom.APP_ERROR. If this function returns phantom.APP_ERROR, then AppConnector::handle_action will not get
@@ -74,7 +73,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _make_rest_call(self, endpoint, action_result, params=None, timeout=None, method="get"):
-        """ Function that makes the REST call to the device. It's a generic function that can be called from various
+        """Function that makes the REST call to the device. It's a generic function that can be called from various
         action handlers.
 
         :param endpoint: REST endpoint that needs to appended to the service address
@@ -92,41 +91,37 @@ class CloudpassagehaloConnector(BaseConnector):
         except AttributeError:
             self.debug_print(consts.CLOUDPASSAGEHALO_ERR_API_UNSUPPORTED_METHOD.format(method=method))
             # set the action_result status to error, the handler function will most probably return as is
-            return action_result.set_status(phantom.APP_ERROR,
-                                            consts.CLOUDPASSAGEHALO_ERR_API_UNSUPPORTED_METHOD.format(method=method)),\
-                response_data
+            return action_result.set_status(
+                phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_API_UNSUPPORTED_METHOD.format(method=method)
+            ), response_data
         except Exception as e:
             self.debug_print(consts.CLOUDPASSAGEHALO_EXCEPTION_OCCURRED, e)
             # set the action_result status to error, the handler function will most probably return as is
-            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_EXCEPTION_OCCURRED),\
-                response_data
+            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_EXCEPTION_OCCURRED), response_data
 
         try:
             if timeout:
-                response = request_func("{}{}".format(self._url, endpoint), params=params, headers=self._header,
-                                        timeout=timeout, verify=True)
+                response = request_func(f"{self._url}{endpoint}", params=params, headers=self._header, timeout=timeout, verify=True)
             else:
-                response = request_func("{}{}".format(self._url, endpoint), params=params, headers=self._header,
-                                        verify=True)
+                response = request_func(f"{self._url}{endpoint}", params=params, headers=self._header, verify=True)
 
             # store the r_text in debug data, it will get dumped in the logs if an error occurs
-            if hasattr(action_result, 'add_debug_data'):
+            if hasattr(action_result, "add_debug_data"):
                 if response is not None:
-                    action_result.add_debug_data({'r_status_code': response.status_code})
-                    action_result.add_debug_data({'r_text': response.text})
-                    action_result.add_debug_data({'r_headers': response.headers})
+                    action_result.add_debug_data({"r_status_code": response.status_code})
+                    action_result.add_debug_data({"r_text": response.text})
+                    action_result.add_debug_data({"r_headers": response.headers})
                 else:
-                    action_result.add_debug_data({'r_text': 'r is None'})
+                    action_result.add_debug_data({"r_text": "r is None"})
         except Exception as e:
             self.debug_print(consts.CLOUDPASSAGEHALO_ERR_SERVER_CONN, e)
             # set the action_result status to error, the handler function will most probably return as is
-            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_SERVER_CONN, e),\
-                response_data
+            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_SERVER_CONN, e), response_data
 
         # Try parsing the json
         try:
-            content_type = response.headers.get('content-type')
-            if content_type and content_type.find('json') != -1:
+            content_type = response.headers.get("content-type")
+            if content_type and content_type.find("json") != -1:
                 response_data = response.json()
             else:
                 response_data = response.text
@@ -145,19 +140,18 @@ class CloudpassagehaloConnector(BaseConnector):
             if isinstance(response_data, dict):
                 message = response_data.get("error", message)
 
-            self.debug_print(consts.CLOUDPASSAGEHALO_ERR_FROM_SERVER.format(status=response.status_code,
-                                                                            detail=message))
+            self.debug_print(consts.CLOUDPASSAGEHALO_ERR_FROM_SERVER.format(status=response.status_code, detail=message))
             # set the action_result status to error, the handler function will most probably return as is
-            return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_FROM_SERVER,
-                                            status=response.status_code, detail=message), response_data
+            return action_result.set_status(
+                phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_FROM_SERVER, status=response.status_code, detail=message
+            ), response_data
 
         # In case of success scenario
         if response.status_code == consts.CLOUDPASSAGEHALO_REST_RESP_SUCCESS:
             # If response obtained is not in json format
             if not isinstance(response_data, dict):
                 self.debug_print(consts.CLOUDPASSAGEHALO_UNEXPECTED_RESPONSE)
-                return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_UNEXPECTED_RESPONSE), \
-                    response_data
+                return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_UNEXPECTED_RESPONSE), response_data
             return phantom.APP_SUCCESS, response_data
 
         # If response code is unknown
@@ -170,12 +164,12 @@ class CloudpassagehaloConnector(BaseConnector):
 
         # All other response codes from REST call
         # Set the action_result status to error, the handler function will most probably return as is
-        return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_FROM_SERVER,
-                                        status=response.status_code,
-                                        detail=message), response_data
+        return action_result.set_status(
+            phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_ERR_FROM_SERVER, status=response.status_code, detail=message
+        ), response_data
 
     def _test_asset_connectivity(self, param):
-        """ This function tests the connectivity of an asset with given credentials.
+        """This function tests the connectivity of an asset with given credentials.
 
         :param param: ( not used in this method )
         :return: status success/failure
@@ -183,7 +177,7 @@ class CloudpassagehaloConnector(BaseConnector):
 
         action_result = ActionResult()
         self.save_progress(consts.CLOUDPASSAGEHALO_TEST_CONN_MSG)
-        self.save_progress("Configured URL: {url}".format(url=self._url))
+        self.save_progress(f"Configured URL: {self._url}")
 
         # Querying endpoint to generate access token
         generate_token_status = self._generate_api_token(action_result, timeout=30)
@@ -198,22 +192,24 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.get_status()
 
     def _generate_api_token(self, action_result, timeout=None):
-        """ This function is used to generate token. Token expire time = 15 min.
+        """This function is used to generate token. Token expire time = 15 min.
 
         :param action_result: object of ActionResult class
         :param timeout: timeout for request
         :return: status success/failure
         """
 
-        params = urllib.urlencode({'grant_type': 'client_credentials'})
+        params = urllib.urlencode({"grant_type": "client_credentials"})
 
         # Need to fix base64.b64encode issue as it accept bytes-like object
-        self._header = {"Authorization": "Basic {}".format(
-            base64.b64encode(("{}:{}".format(self._client_id, self._client_secret)).encode('UTF-8')).decode('utf-8'))}
+        self._header = {
+            "Authorization": "Basic {}".format(base64.b64encode((f"{self._client_id}:{self._client_secret}").encode()).decode("utf-8"))
+        }
 
         # Querying endpoint to generate token
-        generate_token_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_AUTH, action_result,
-                                                               method="post", params=params, timeout=timeout)
+        generate_token_status, response = self._make_rest_call(
+            consts.CLOUDPASSAGEHALO_AUTH, action_result, method="post", params=params, timeout=timeout
+        )
 
         # Something went wrong
         if phantom.is_fail(generate_token_status):
@@ -228,12 +224,12 @@ class CloudpassagehaloConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_TOKEN_ERR)
 
         # Update authorization header with access token
-        self._header = {"Authorization": "Bearer {}".format(self._access_token)}
+        self._header = {"Authorization": f"Bearer {self._access_token}"}
 
         return phantom.APP_SUCCESS
 
     def _get_server(self, param, action_result):
-        """ This function is used to get server id based on input parameter(AWS Instance ID/IP/Hostname).
+        """This function is used to get server id based on input parameter(AWS Instance ID/IP/Hostname).
 
         :param param: dictionary which contains information about parameters
         :param action_result: object of ActionResult class
@@ -268,9 +264,9 @@ class CloudpassagehaloConnector(BaseConnector):
         filtered_list = response.get("servers")
         if filtered_list:
             if hostname:
-                filtered_list = [server for server in filtered_list if server['hostname'] == hostname]
+                filtered_list = [server for server in filtered_list if server["hostname"] == hostname]
             if filtered_list and ip:
-                filtered_list = [server for server in filtered_list if server['primary_ip_address'] == ip]
+                filtered_list = [server for server in filtered_list if server["primary_ip_address"] == ip]
 
         if not filtered_list:
             return action_result.set_status(phantom.APP_ERROR, consts.CLOUDPASSAGEHALO_INVALID_SERVER), None
@@ -278,7 +274,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return phantom.APP_SUCCESS, filtered_list[0]
 
     def _get_system_info(self, param):
-        """ This function is used to get server information.
+        """This function is used to get server information.
 
         :param param: dictionary which contains information about parameters
         :return: status success/failure
@@ -301,8 +297,7 @@ class CloudpassagehaloConnector(BaseConnector):
             return action_result.get_status()
 
         # Querying endpoint to get server information
-        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(
-            server_id=server_details["id"]), action_result)
+        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server_details["id"]), action_result)
 
         # Something went wrong
         if phantom.is_fail(status):
@@ -316,7 +311,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _list_packages(self, param):
-        """ This function is used to get all package information for specific server.
+        """This function is used to get all package information for specific server.
 
         :param param: dictionary of input parameters
         :return: status success/failure
@@ -340,8 +335,7 @@ class CloudpassagehaloConnector(BaseConnector):
             return action_result.get_status()
 
         # Querying endpoint to get package information
-        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(
-            server_id=server_details["id"]), action_result)
+        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(server_id=server_details["id"]), action_result)
 
         # Something went wrong while getting package information
         if phantom.is_fail(status):
@@ -353,14 +347,14 @@ class CloudpassagehaloConnector(BaseConnector):
         summary_data["primary_ip_address"] = server_details["primary_ip_address"]
         summary_data["hostname"] = server_details["hostname"]
 
-        if response.get("scan") and response['scan']["findings"]:
+        if response.get("scan") and response["scan"]["findings"]:
             for finding in response["scan"]["findings"]:
                 action_result.add_data(finding)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_package(self, param):
-        """ This function is used to get information about a package.
+        """This function is used to get information about a package.
 
         :param param: dictionary of input parameters
         :return: status success/failure
@@ -391,8 +385,9 @@ class CloudpassagehaloConnector(BaseConnector):
         for server in response.get("servers", []):
             server_response = None
             # Querying endpoint to get package information
-            package_status, package_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(
-                server_id=server["id"]), action_result)
+            package_status, package_response = self._make_rest_call(
+                consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(server_id=server["id"]), action_result
+            )
 
             # Something went wrong while getting package information
             if phantom.is_fail(package_status):
@@ -404,7 +399,8 @@ class CloudpassagehaloConnector(BaseConnector):
                     if not server_response:
                         # Querying endpoint to get server information
                         server_status, server_response = self._make_rest_call(
-                            consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server["id"]), action_result)
+                            consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server["id"]), action_result
+                        )
 
                         # Something went wrong
                         if phantom.is_fail(server_status):
@@ -413,8 +409,7 @@ class CloudpassagehaloConnector(BaseConnector):
                     finding["server_info_id"] = server_response["server"]["id"]
                     finding["server_info_hostname"] = server_response["server"]["hostname"]
                     finding["server_info_primary_ip_address"] = server_response["server"]["primary_ip_address"]
-                    finding["server_info_ec2_instance_id"] = \
-                        (server_response["server"]).get("aws_ec2", {}).get("ec2_instance_id")
+                    finding["server_info_ec2_instance_id"] = (server_response["server"]).get("aws_ec2", {}).get("ec2_instance_id")
                     action_result.add_data(finding)
 
         # Fail action if package not found
@@ -428,7 +423,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _list_processes(self, param):
-        """ Function that returns information for all processes on the server specified by server ID.
+        """Function that returns information for all processes on the server specified by server ID.
 
         :param param: dictionary of input parameters
         :return: status success/failure
@@ -452,8 +447,7 @@ class CloudpassagehaloConnector(BaseConnector):
             return action_result.get_status()
 
         # Querying endpoint to get process information
-        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_PROCESSES_ENDPOINT.format(
-            server_id=server_details["id"]), action_result)
+        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_PROCESSES_ENDPOINT.format(server_id=server_details["id"]), action_result)
 
         # Something went wrong
         if phantom.is_fail(status):
@@ -472,11 +466,11 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_process(self, param):
-        """ This function is used to get information about a process.
+        """This function is used to get information about a process.
 
-       :param param: dictionary of input parameters
-       :return: status success/failure
-       """
+        :param param: dictionary of input parameters
+        :return: status success/failure
+        """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
         summary_data = action_result.update_summary({})
@@ -501,10 +495,10 @@ class CloudpassagehaloConnector(BaseConnector):
         server_response = None
 
         for server in response.get("servers", []):
-
             # Querying endpoint to get process information
             process_status, process_response = self._make_rest_call(
-                consts.CLOUDPASSAGEHALO_PROCESSES_ENDPOINT.format(server_id=server["id"]), action_result)
+                consts.CLOUDPASSAGEHALO_PROCESSES_ENDPOINT.format(server_id=server["id"]), action_result
+            )
 
             # Something went wrong
             if phantom.is_fail(process_status):
@@ -515,8 +509,8 @@ class CloudpassagehaloConnector(BaseConnector):
                     if not server_response:
                         # Querying endpoint to get server information
                         server_status, server_response = self._make_rest_call(
-                            consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server["id"]),
-                            action_result)
+                            consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server["id"]), action_result
+                        )
 
                         # Something went wrong
                         if phantom.is_fail(server_status):
@@ -525,8 +519,7 @@ class CloudpassagehaloConnector(BaseConnector):
                     process["server_info_id"] = server_response["server"]["id"]
                     process["server_info_hostname"] = server_response["server"]["hostname"]
                     process["server_info_primary_ip_address"] = server_response["server"]["primary_ip_address"]
-                    process["server_info_ec2_instance_id"] = \
-                        (server_response["server"]).get("aws_ec2", {}).get("ec2_instance_id")
+                    process["server_info_ec2_instance_id"] = (server_response["server"]).get("aws_ec2", {}).get("ec2_instance_id")
                     action_result.add_data(process)
 
         # Fail action in case of invalid process name
@@ -540,7 +533,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _list_vulnerabilities(self, param):
-        """ For the server specified in the call URL, returns all results detected by the most recent vulnerability
+        """For the server specified in the call URL, returns all results detected by the most recent vulnerability
         scan on that server. For each vulnerable package, all of its known vulnerabilities (CVE's) are listed as well.
 
         :param param: dictionary of input parameters
@@ -565,8 +558,7 @@ class CloudpassagehaloConnector(BaseConnector):
             return action_result.get_status()
 
         # Make REST call
-        resp_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(
-            server_id=server_details["id"]), action_result)
+        resp_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(server_id=server_details["id"]), action_result)
 
         # Something went wrong
         if phantom.is_fail(resp_status):
@@ -584,12 +576,12 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_vulnerability(self, param):
-        """ This function is used to get information about a CVE (Common Vulnerability and Exposure
-        number).
+        """This function is used to get information about a CVE (Common Vulnerability and Exposure
+         number).
 
-       :param param: dictionary of input parameters
-       :return: status success/failure
-       """
+        :param param: dictionary of input parameters
+        :return: status success/failure
+        """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
         summary_data = action_result.update_summary({})
@@ -608,8 +600,7 @@ class CloudpassagehaloConnector(BaseConnector):
         params = {"cve": cve_number}
 
         # Querying endpoint to get server information
-        resp_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SERVERS_ENDPOINT, action_result,
-                                                     params=params)
+        resp_status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SERVERS_ENDPOINT, action_result, params=params)
 
         # Something went wrong
         if phantom.is_fail(resp_status):
@@ -622,15 +613,15 @@ class CloudpassagehaloConnector(BaseConnector):
         for server in response.get("servers", []):
             # Querying endpoint to get server information
             server_status, server_response = self._make_rest_call(
-                consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server["id"]), action_result)
+                consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server["id"]), action_result
+            )
 
             # Something went wrong
             if phantom.is_fail(server_status):
                 return action_result.get_status()
 
             # Querying endpoint to get vulnerability information
-            vuln_status, vuln_response = self._make_rest_call(
-                consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(server_id=server["id"]), action_result)
+            vuln_status, vuln_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(server_id=server["id"]), action_result)
 
             # Something went wrong
             if phantom.is_fail(vuln_status):
@@ -644,7 +635,7 @@ class CloudpassagehaloConnector(BaseConnector):
             for finding in vuln_response["scan"].get("findings", []):
                 cve_entries = finding.get("cve_entries")
                 if cve_entries is not None:
-                    filtered_list = [x for x in cve_entries if x['cve_entry'] == cve_number]
+                    filtered_list = [x for x in cve_entries if x["cve_entry"] == cve_number]
                     if filtered_list:
                         finding["cve_entries"] = filtered_list
                         if finding["status"] == "bad":
@@ -669,8 +660,7 @@ class CloudpassagehaloConnector(BaseConnector):
 
             vuln_response["server_info_hostname"] = server_response["server"]["hostname"]
             vuln_response["server_info_primary_ip_address"] = server_response["server"]["primary_ip_address"]
-            vuln_response["server_info_ec2_instance_id"] = \
-                (server_response["server"]).get("aws_ec2", {}).get("ec2_instance_id")
+            vuln_response["server_info_ec2_instance_id"] = (server_response["server"]).get("aws_ec2", {}).get("ec2_instance_id")
 
             # Adding data to action_result
             action_result.add_data(vuln_response)
@@ -688,7 +678,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _list_users(self, param):
-        """ Function that returns all users' information for server.
+        """Function that returns all users' information for server.
 
         :param param: dictionary of input parameters
         :return: status success/failure
@@ -714,8 +704,7 @@ class CloudpassagehaloConnector(BaseConnector):
         params = {"server_id": server_details["id"]}
 
         # Querying endpoint to get process information
-        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_LOCAL_ACCOUNTS_ENDPOINT, action_result,
-                                                params=params)
+        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_LOCAL_ACCOUNTS_ENDPOINT, action_result, params=params)
 
         # Something went wrong
         if phantom.is_fail(status):
@@ -734,7 +723,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_user(self, param):
-        """ This function is used to get information about a user.
+        """This function is used to get information about a user.
 
         :param param: dictionary of input parameters
         :return: status success/failure
@@ -756,29 +745,29 @@ class CloudpassagehaloConnector(BaseConnector):
         params = {"username": username}
 
         # Querying endpoint to get accounts information
-        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_LOCAL_ACCOUNTS_ENDPOINT, action_result,
-                                                params=params)
+        status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_LOCAL_ACCOUNTS_ENDPOINT, action_result, params=params)
 
         # Something went wrong while getting accounts information
         if phantom.is_fail(status):
             return action_result.get_status()
 
         for account in response.get("accounts", []):
-
-            if account['username'].lower() != username.lower():
+            if account["username"].lower() != username.lower():
                 continue
 
             # Querying endpoint to get server information
-            server_status, server_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(
-                server_id=account["server_id"]), action_result)
+            server_status, server_response = self._make_rest_call(
+                consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=account["server_id"]), action_result
+            )
 
             # Something went wrong
             if phantom.is_fail(server_status):
                 return action_result.get_status()
 
             # Querying endpoint to get user information
-            account_status, account_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_USER_ENDPOINT.format(
-                server_id=account["server_id"], username=username), action_result)
+            account_status, account_response = self._make_rest_call(
+                consts.CLOUDPASSAGEHALO_USER_ENDPOINT.format(server_id=account["server_id"], username=username), action_result
+            )
 
             # Something went wrong
             if phantom.is_fail(account_status):
@@ -788,8 +777,7 @@ class CloudpassagehaloConnector(BaseConnector):
             account_response["server_info_id"] = server_response["server"]["id"]
             account_response["server_info_hostname"] = server_response["server"]["hostname"]
             account_response["server_info_primary_ip_address"] = server_response["server"]["primary_ip_address"]
-            account_response["server_info_ec2_instance_id"] = \
-                (server_response["server"]).get("aws_ec2", {}).get("ec2_instance_id")
+            account_response["server_info_ec2_instance_id"] = (server_response["server"]).get("aws_ec2", {}).get("ec2_instance_id")
 
             # Adding data to action_result
             action_result.add_data(account_response)
@@ -805,7 +793,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _list_servers(self, param):
-        """ This function is used to list servers information.
+        """This function is used to list servers information.
 
         :param param: dictionary of input parameters
         :return: status success/failure
@@ -834,16 +822,15 @@ class CloudpassagehaloConnector(BaseConnector):
 
         # Update params
         if package_name:
-            params.update({'package_name': package_name})
+            params.update({"package_name": package_name})
         if cve_number:
-            params.update({'cve': cve_number})
+            params.update({"cve": cve_number})
 
         # If package_name/cve_number is present
         if params:
             # Filter server records by package name and CVE number
             # Querying endpoint to get server information
-            status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SERVERS_ENDPOINT, action_result,
-                                                    params=params)
+            status, response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SERVERS_ENDPOINT, action_result, params=params)
 
             # Something went wrong while getting server information
             if phantom.is_fail(status):
@@ -854,8 +841,9 @@ class CloudpassagehaloConnector(BaseConnector):
                 for server in response.get("servers", []):
                     # Get all packages of server
                     # Querying endpoint to get package information
-                    package_status, package_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(
-                        server_id=server["id"]), action_result)
+                    package_status, package_response = self._make_rest_call(
+                        consts.CLOUDPASSAGEHALO_SVM_ENDPOINT.format(server_id=server["id"]), action_result
+                    )
 
                     # Something went wrong while getting package information
                     if phantom.is_fail(package_status):
@@ -878,9 +866,7 @@ class CloudpassagehaloConnector(BaseConnector):
                 no_data_found = True
 
         if username and not no_data_found:
-
-            server_id_set_status, server_id_set = self._get_filtered_server_by_user(action_result, username,
-                                                                                    server_id_set)
+            server_id_set_status, server_id_set = self._get_filtered_server_by_user(action_result, username, server_id_set)
 
             # Something went wrong
             if phantom.is_fail(server_id_set_status):
@@ -892,7 +878,6 @@ class CloudpassagehaloConnector(BaseConnector):
 
         # If process name is present
         if process_name and not no_data_found:
-
             # if no server found get all server_ids using _get_all_server_id function
             if not server_id_set:
                 server_id_set_status, server_id_set = self._get_all_server_id(action_result)
@@ -906,18 +891,21 @@ class CloudpassagehaloConnector(BaseConnector):
 
             # Loop through server_id_list
             for server_id in server_id_list:
-
                 # Get all processes of given server
                 # Querying endpoint to get processes information
                 process_status, process_response = self._make_rest_call(
-                    consts.CLOUDPASSAGEHALO_PROCESSES_ENDPOINT.format(server_id=server_id), action_result)
+                    consts.CLOUDPASSAGEHALO_PROCESSES_ENDPOINT.format(server_id=server_id), action_result
+                )
 
                 # Something went wrong
                 if phantom.is_fail(process_status):
                     return action_result.get_status()
 
-                process_list = [process["process_name"].lower() for process in process_response.get("processes", [])
-                                if process_name.lower() == process["process_name"].lower()]
+                process_list = [
+                    process["process_name"].lower()
+                    for process in process_response.get("processes", [])
+                    if process_name.lower() == process["process_name"].lower()
+                ]
 
                 # If process not present with given process name remove that server_id from set
                 if not process_list:
@@ -943,7 +931,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_all_server_id(self, action_result):
-        """ This function is used to get server ids.
+        """This function is used to get server ids.
 
         :param action_result: object of ActionResult class
         :return: status success/failure and server_id_set
@@ -959,7 +947,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return phantom.APP_SUCCESS, set(server["id"] for server in response.get("servers", []))
 
     def _get_filtered_server_by_user(self, action_result, username, server_id_set):
-        """ This function is used to get filtered server id set by user.
+        """This function is used to get filtered server id set by user.
 
         :param action_result: object of ActionResult class
         :param username: username parameter
@@ -970,11 +958,10 @@ class CloudpassagehaloConnector(BaseConnector):
         params = {"username": username, "sort_by": "username.desc"}
 
         if server_id_set:
-            params.update({"server_id": ','.join(map(str, server_id_set))})
+            params.update({"server_id": ",".join(map(str, server_id_set))})
 
         # Querying endpoint to get accounts information
-        user_status, user_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_LOCAL_ACCOUNTS_ENDPOINT,
-                                                          action_result, params=params)
+        user_status, user_response = self._make_rest_call(consts.CLOUDPASSAGEHALO_LOCAL_ACCOUNTS_ENDPOINT, action_result, params=params)
 
         # Something went wrong while getting account information
         if phantom.is_fail(user_status):
@@ -987,7 +974,7 @@ class CloudpassagehaloConnector(BaseConnector):
 
         # Remove server id from server_id_set if username is not present
         for account in user_response.get("accounts", []):
-            if account['username'].lower() != username.lower():
+            if account["username"].lower() != username.lower():
                 server_id_set.discard(account["server_id"])
                 continue
             server_id_set.update({account["server_id"]})
@@ -995,7 +982,7 @@ class CloudpassagehaloConnector(BaseConnector):
         return phantom.APP_SUCCESS, server_id_set
 
     def _get_total_servers(self, server_id_set, action_result, no_data_found):
-        """ This function is used to get total servers.
+        """This function is used to get total servers.
 
         :param action_result: object of ActionResult class
         :param no_data_found: no_data_found flag
@@ -1014,7 +1001,8 @@ class CloudpassagehaloConnector(BaseConnector):
             for server_id in server_id_set:
                 # Querying endpoint to get server information
                 server_status, server_response = self._make_rest_call(
-                    consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server_id), action_result)
+                    consts.CLOUDPASSAGEHALO_SERVER_ID_ENDPOINT.format(server_id=server_id), action_result
+                )
 
                 # Something went wrong
                 if phantom.is_fail(server_status):
@@ -1025,44 +1013,45 @@ class CloudpassagehaloConnector(BaseConnector):
         return action_result.get_data_size(), phantom.APP_SUCCESS
 
     def handle_action(self, param):
-        """ This function gets current action identifier and calls member function of it's own to handle the action.
+        """This function gets current action identifier and calls member function of it's own to handle the action.
 
         :param param: dictionary which contains information about the actions to be executed
         :return: status success/failure
         """
 
         # Dictionary mapping each action with its corresponding actions
-        action_mapping = {'get_process': self._get_process,
-                          'list_packages': self._list_packages,
-                          'list_processes': self._list_processes,
-                          'get_system_info': self._get_system_info,
-                          'get_package': self._get_package,
-                          'list_vulnerabilities': self._list_vulnerabilities,
-                          'get_vulnerability': self._get_vulnerability,
-                          'get_user': self._get_user,
-                          'list_users': self._list_users,
-                          'list_servers': self._list_servers,
-                          'test_asset_connectivity': self._test_asset_connectivity}
+        action_mapping = {
+            "get_process": self._get_process,
+            "list_packages": self._list_packages,
+            "list_processes": self._list_processes,
+            "get_system_info": self._get_system_info,
+            "get_package": self._get_package,
+            "list_vulnerabilities": self._list_vulnerabilities,
+            "get_vulnerability": self._get_vulnerability,
+            "get_user": self._get_user,
+            "list_users": self._list_users,
+            "list_servers": self._list_servers,
+            "test_asset_connectivity": self._test_asset_connectivity,
+        }
 
         action = self.get_action_identifier()
 
         try:
             run_action = action_mapping[action]
         except:
-            raise ValueError("action {action} is not supported".format(action=action))
+            raise ValueError(f"action {action} is not supported")
 
         return run_action(param)
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     import sys
 
     import pudb
 
     pudb.set_trace()
     if len(sys.argv) < 2:
-        print('No test json specified as input')
+        print("No test json specified as input")
         sys.exit(0)
     with open(sys.argv[1]) as f:
         in_json = f.read()
