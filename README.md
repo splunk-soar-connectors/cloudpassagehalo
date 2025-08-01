@@ -1,7 +1,7 @@
 # CloudPassage Halo
 
 Publisher: Splunk \
-Connector Version: 2.0.7 \
+Connector Version: 2.0.8 \
 Product Vendor: CloudPassage \
 Product Name: CloudPassage Halo \
 Minimum Product Version: 5.1.0
